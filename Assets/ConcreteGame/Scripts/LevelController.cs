@@ -10,4 +10,9 @@ public class LevelController : MonoBehaviour
     {
         Instance = this;
     }
+
+    private void Start()
+    {
+        // пофіксити з'єднювання обєктів
+    }
 }

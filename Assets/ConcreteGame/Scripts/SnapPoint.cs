@@ -20,6 +20,8 @@ public class SnapPoint : MonoBehaviour
             if (buildingPoint.Owner == this.Owner)
                 return;
 
+            Debug.Log("Snap Set");
+            
             _snappedTo = buildingPoint;
             buildingPoint.SetSnap(this);
 
@@ -34,7 +36,8 @@ public class SnapPoint : MonoBehaviour
             var other = _snappedTo;
             _snappedTo = null;
             other.ClearSnap();
-
+            Owner.gameObject.GetComponentInChildren<BuildingPoint>().ClearSnap();
+            
             Owner.OnSnapDisconnected(this, other);
         }
     }
