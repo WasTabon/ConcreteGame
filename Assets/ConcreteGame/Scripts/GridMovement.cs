@@ -1,15 +1,26 @@
+using DG.Tweening;
 using UnityEngine;
-using System.Collections.Generic;
 
 public class GridMovement : MonoBehaviour
 {
+    [SerializeField] private float _animSpeed;
+    
+    [SerializeField] private RectTransform _yesButton;
+    [SerializeField] private RectTransform _noButton;
+    
     [SerializeField] private float gridSize = 1f;
     private Camera mainCamera;
     private bool isDragging = false;
+    private bool hasNeighbor = false;
 
     void Start()
     {
         mainCamera = Camera.main;
+        
+        _yesButton.DOScale(Vector3.zero, 0)
+            .SetEase(Ease.InBack);
+        _noButton.DOScale(Vector3.zero, 0)
+            .SetEase(Ease.InBack);
     }
 
     void Update()
@@ -82,9 +93,11 @@ public class GridMovement : MonoBehaviour
         float startX = Mathf.Round(bounds.min.x / gSize) * gSize;
         float startY = Mathf.Round(bounds.min.y / gSize) * gSize;
 
-        for (int ix = 0; ix < widthInCells; ix++)
+        bool foundNeighbor = false;
+
+        for (int ix = 0; ix < widthInCells && !foundNeighbor; ix++)
         {
-            for (int iy = 0; iy < heightInCells; iy++)
+            for (int iy = 0; iy < heightInCells && !foundNeighbor; iy++)
             {
                 Vector3 cellCenter = new Vector3(
                     startX + ix * gSize + gSize / 2f,
@@ -106,11 +119,43 @@ public class GridMovement : MonoBehaviour
 
                     if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
                     {
-                        Debug.Log($"Сосед найден у {name}: {hit.name} на клетке {checkPos}");
+                        foundNeighbor = true;
+                        break;
                     }
                 }
             }
         }
+
+        // только если состояние изменилось
+        if (foundNeighbor && !hasNeighbor)
+        {
+            hasNeighbor = true;
+            ShowBuildButtons();
+        }
+        else if (!foundNeighbor && hasNeighbor)
+        {
+            hasNeighbor = false;
+            HideBuildButtons();
+        }
+    }
+
+    private void ShowBuildButtons()
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Join(_yesButton.DOScale(Vector3.one, _animSpeed)
+            .SetEase(Ease.InBack));
+        sequence.Join(_noButton.DOScale(Vector3.one, _animSpeed)
+            .SetEase(Ease.InBack));
+    }
+    private void HideBuildButtons()
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Join(_yesButton.DOScale(Vector3.zero, _animSpeed)
+            .SetEase(Ease.InBack));
+        sequence.Join(_noButton.DOScale(Vector3.zero, _animSpeed)
+            .SetEase(Ease.InBack));
     }
     
     private Bounds GetBounds(float gSize)
@@ -124,14 +169,11 @@ public class GridMovement : MonoBehaviour
         return new Bounds(transform.position, Vector3.one * gSize);
     }
 
-    /// <summary>
-    /// Проверяем, помещается ли объект в пределах сетки и не пересекается ли с другими
-    /// </summary>
     private bool CanPlaceAt(Vector3 targetPos, float gSize)
     {
         Bounds bounds = GetBounds(gSize);
         Vector3 offset = targetPos - transform.position;
-        bounds.center += offset; // смещаем bounds в потенциальное место
+        bounds.center += offset;
 
         int widthInCells = Mathf.CeilToInt(bounds.size.x / gSize);
         int heightInCells = Mathf.CeilToInt(bounds.size.y / gSize);
@@ -147,16 +189,14 @@ public class GridMovement : MonoBehaviour
                     startX + ix * gSize + gSize / 2f,
                     startY + iy * gSize + gSize / 2f,
                     targetPos.z);
-
-                // --- 1. Проверяем границы ---
+                
                 if (!GridBoundaryController.Instance.IsInsideBounds(cellCenter))
                     return false;
 
-                // --- 2. Проверяем занятость ---
                 Collider2D hit = Physics2D.OverlapPoint(cellCenter);
                 if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
                 {
-                    return false; // клетка занята другим объектом
+                    return false;
                 }
             }
         }
