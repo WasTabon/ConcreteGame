@@ -421,7 +421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a025258560d094a8392d599b647d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 1
+  gridSize: 0.5
 --- !u!50 &563246292
 Rigidbody2D:
   serializedVersion: 4
@@ -556,7 +556,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.47, y: -2.72, z: 0}
-  m_LocalScale: {x: 5, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -593,7 +593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a025258560d094a8392d599b647d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 1
+  gridSize: 0.5
 --- !u!50 &970640391
 Rigidbody2D:
   serializedVersion: 4
@@ -728,7 +728,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.73, y: 1.09, z: 0}
-  m_LocalScale: {x: 5, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -779,7 +779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bottomLeft: {fileID: 1341605932}
   topRight: {fileID: 1193035900}
-  gridSize: 1
+  gridSize: 0.5
   gridColor: {r: 0, g: 1, b: 0, a: 1}
   lineMaterial: {fileID: 2100000, guid: 1231d42ed0e063d42b7b0582652ca1a7, type: 2}
 --- !u!1 &1158492318

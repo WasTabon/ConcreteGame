@@ -66,9 +66,53 @@ public class GridMovement : MonoBehaviour
         if (CanPlaceAt(worldPos, gSize))
         {
             transform.position = worldPos;
+            
+            CheckNeighbors();
         }
     }
 
+    private void CheckNeighbors()
+    {
+        float gSize = GridBoundaryController.Instance != null ? GridBoundaryController.Instance.GridSize : gridSize;
+        Bounds bounds = GetBounds(gSize);
+
+        int widthInCells = Mathf.CeilToInt(bounds.size.x / gSize);
+        int heightInCells = Mathf.CeilToInt(bounds.size.y / gSize);
+
+        float startX = Mathf.Round(bounds.min.x / gSize) * gSize;
+        float startY = Mathf.Round(bounds.min.y / gSize) * gSize;
+
+        for (int ix = 0; ix < widthInCells; ix++)
+        {
+            for (int iy = 0; iy < heightInCells; iy++)
+            {
+                Vector3 cellCenter = new Vector3(
+                    startX + ix * gSize + gSize / 2f,
+                    startY + iy * gSize + gSize / 2f,
+                    transform.position.z);
+
+                Vector3[] directions = new Vector3[]
+                {
+                    new Vector3(gSize, 0, 0),   // вправо
+                    new Vector3(-gSize, 0, 0),  // влево
+                    new Vector3(0, gSize, 0),   // вверх
+                    new Vector3(0, -gSize, 0),  // вниз
+                };
+
+                foreach (var dir in directions)
+                {
+                    Vector3 checkPos = cellCenter + dir;
+                    Collider2D hit = Physics2D.OverlapPoint(checkPos);
+
+                    if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
+                    {
+                        Debug.Log($"Сосед найден у {name}: {hit.name} на клетке {checkPos}");
+                    }
+                }
+            }
+        }
+    }
+    
     private Bounds GetBounds(float gSize)
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
