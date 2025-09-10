@@ -62,6 +62,15 @@ public class GridBoundaryController : MonoBehaviour
         maxY = Mathf.Ceil(rawMaxY / gSize) * gSize;
     }
 
+    public void HideGrid()
+    {
+        foreach (var line in gridLines)
+        {
+            if (line != null)
+                line.enabled = false;
+        }
+    }
+    
     private void GenerateGrid()
     {
         // Очистить старые линии

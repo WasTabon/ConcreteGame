@@ -57,6 +57,18 @@ public class LevelController : MonoBehaviour
                     .SetEase(Ease.InBack);
             }));
     }
+
+    public void StartGame()
+    {
+        GridBoundaryController.Instance.HideGrid();
+        
+        GridMovement[] gridMovements = FindObjectsOfType<GridMovement>();
+
+        foreach (var gm in gridMovements)
+        {
+            gm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        }
+    }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)
     {
@@ -101,6 +113,7 @@ public class LevelController : MonoBehaviour
         GameObject obj = Instantiate(prefab, spawnPos, prefab.transform.rotation);
 
         _currentObject = obj;
+        button.SetActive(false);
         
         UIController.Instance.CloseBuildingPanel();
     }
