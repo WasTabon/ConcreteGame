@@ -15,15 +15,21 @@ public class GridMovement : MonoBehaviour
 
     private Camera mainCamera;
     private bool isDragging = false;
-    private bool hasNeighbor = false;
+    private bool hasCollision = false;
     private int fingerId = -1; // отслеживание тача
     private Tween moveTween;   // твины движения
+
+    // запрещённые направления (по колизиям)
+    private bool blockLeft, blockRight, blockUp, blockDown;
+
+    // --- DEBUG ---
+    private Bounds debugBounds;   // последний проверочный бокс
+    private bool drawDebug;       // включить/выключить рисование
 
     void Start()
     {
         mainCamera = Camera.main;
 
-        // Скрыть кнопки при старте
         _yesButton.localScale = Vector3.zero;
         _noButton.localScale = Vector3.zero;
 
@@ -43,6 +49,9 @@ public class GridMovement : MonoBehaviour
 
         if (isDragging)
             DragToGrid();
+        
+        // Постоянно проверяем соседей для определения блокировок и показа кнопок
+        CheckNeighbors();
     }
 
     // --- ПК управление ---
@@ -101,79 +110,131 @@ public class GridMovement : MonoBehaviour
         float snappedX = Mathf.Round((worldPos.x - size.x / 2f) / gSize) * gSize + size.x / 2f;
         float snappedY = Mathf.Round((worldPos.y - size.y / 2f) / gSize) * gSize + size.y / 2f;
 
-        worldPos.x = snappedX;
-        worldPos.y = snappedY;
-        worldPos.z = transform.position.z;
+        Vector3 targetPos = new Vector3(snappedX, snappedY, transform.position.z);
 
-        if (CanPlaceAt(worldPos, gSize))
+        if (CanMoveToPosition(targetPos, gSize))
         {
-            // плавное движение вместо телепорта
             moveTween?.Kill();
-            moveTween = transform.DOMove(worldPos, 0.1f).SetEase(Ease.OutQuad);
-
-            CheckNeighbors();
+            moveTween = transform.DOMove(targetPos, 0.1f).SetEase(Ease.OutQuad);
         }
     }
 
     private void CheckNeighbors()
     {
-        float gSize = GridBoundaryController.Instance != null ? GridBoundaryController.Instance.GridSize : gridSize;
-        Bounds bounds = GetBounds(gSize);
+        // Сбрасываем все блокировки
+        blockLeft = blockRight = blockUp = blockDown = false;
 
-        int widthInCells = Mathf.CeilToInt(bounds.size.x / gSize);
-        int heightInCells = Mathf.CeilToInt(bounds.size.y / gSize);
+        float gSize = GridBoundaryController.Instance != null
+            ? GridBoundaryController.Instance.GridSize
+            : gridSize;
 
-        float startX = Mathf.Round(bounds.min.x / gSize) * gSize;
-        float startY = Mathf.Round(bounds.min.y / gSize) * gSize;
-
+        Vector3 currentPos = transform.position;
         bool foundNeighbor = false;
 
-        for (int ix = 0; ix < widthInCells && !foundNeighbor; ix++)
+        // Проверяем все 4 направления на наличие соседей на расстоянии одной клетки
+        Vector3[] directions = {
+            Vector3.right * gSize,    // право
+            Vector3.left * gSize,     // лево  
+            Vector3.up * gSize,       // вверх
+            Vector3.down * gSize      // вниз
+        };
+
+        for (int i = 0; i < directions.Length; i++)
         {
-            for (int iy = 0; iy < heightInCells && !foundNeighbor; iy++)
+            Vector3 checkPosition = currentPos + directions[i];
+            
+            // Проверяем есть ли объект в этой позиции
+            Bounds checkBounds = GetBounds(gSize);
+            checkBounds.center = checkPosition;
+            
+            Collider2D[] hits = Physics2D.OverlapBoxAll(checkBounds.center, checkBounds.size * 0.9f, 0f);
+            
+            foreach (var hit in hits)
             {
-                Vector3 cellCenter = new Vector3(
-                    startX + ix * gSize + gSize / 2f,
-                    startY + iy * gSize + gSize / 2f,
-                    transform.position.z);
-
-                Vector3[] directions = new Vector3[]
+                if (hit != null && hit.gameObject != gameObject)
                 {
-                    new Vector3(gSize, 0, 0),   // вправо
-                    new Vector3(-gSize, 0, 0),  // влево
-                    new Vector3(0, gSize, 0),   // вверх
-                    new Vector3(0, -gSize, 0),  // вниз
-                };
-
-                foreach (var dir in directions)
-                {
-                    Vector3 checkPos = cellCenter + dir;
-                    Collider2D[] hits = Physics2D.OverlapPointAll(checkPos);
-
-                    foreach (var hit in hits)
+                    foundNeighbor = true;
+                    
+                    // Блокируем направление к найденному соседу
+                    switch (i)
                     {
-                        if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
-                        {
-                            foundNeighbor = true;
-                            break;
-                        }
+                        case 0: blockRight = true; break;  // блокируем движение вправо
+                        case 1: blockLeft = true; break;   // блокируем движение влево
+                        case 2: blockUp = true; break;     // блокируем движение вверх
+                        case 3: blockDown = true; break;   // блокируем движение вниз
                     }
-
-                    if (foundNeighbor) break;
+                    break;
                 }
             }
         }
 
-        if (foundNeighbor && !hasNeighbor)
+        // Также проверяем текущую позицию на перекрытие с другими объектами
+        Bounds currentBounds = GetBounds(gSize);
+        Collider2D[] currentHits = Physics2D.OverlapBoxAll(currentBounds.center, currentBounds.size * 0.9f, 0f);
+        
+        foreach (var hit in currentHits)
         {
-            hasNeighbor = true;
+            if (hit != null && hit.gameObject != gameObject)
+            {
+                foundNeighbor = true;
+                break;
+            }
+        }
+
+        // Обновляем состояние кнопок
+        if (foundNeighbor && !hasCollision)
+        {
+            hasCollision = true;
             ShowBuildButtons();
         }
-        else if (!foundNeighbor && hasNeighbor)
+        else if (!foundNeighbor && hasCollision)
         {
-            hasNeighbor = false;
+            hasCollision = false;
             HideBuildButtons();
         }
+    }
+
+    private bool CanMoveToPosition(Vector3 targetPos, float gSize)
+    {
+        Vector3 delta = targetPos - transform.position;
+
+        // Нормализуем дельту к направлению движения на сетке
+        float deltaX = Mathf.Round(delta.x / gSize);
+        float deltaY = Mathf.Round(delta.y / gSize);
+
+        // Проверяем блокировки основных направлений
+        if (deltaX > 0 && blockRight) return false;  // движение вправо
+        if (deltaX < 0 && blockLeft) return false;   // движение влево
+        if (deltaY > 0 && blockUp) return false;     // движение вверх
+        if (deltaY < 0 && blockDown) return false;   // движение вниз
+
+        // Для диагонального движения проверяем оба направления
+        if (deltaX > 0 && deltaY > 0 && (blockRight || blockUp)) return false;     // вправо-вверх
+        if (deltaX < 0 && deltaY > 0 && (blockLeft || blockUp)) return false;      // влево-вверх
+        if (deltaX > 0 && deltaY < 0 && (blockRight || blockDown)) return false;   // вправо-вниз
+        if (deltaX < 0 && deltaY < 0 && (blockLeft || blockDown)) return false;    // влево-вниз
+
+        // Проверяем, что в целевой позиции нет коллизий
+        Bounds bounds = GetBounds(gSize);
+        bounds.center = targetPos;
+
+        // --- DEBUG ---
+        debugBounds = bounds;
+        drawDebug = true;
+
+        Collider2D[] hits = Physics2D.OverlapBoxAll(bounds.center, bounds.size * 0.9f, 0f);
+
+        foreach (var hit in hits)
+        {
+            if (hit != null && hit.gameObject != gameObject)
+                return false;
+        }
+
+        // Проверяем границы
+        if (GridBoundaryController.Instance != null && !GridBoundaryController.Instance.IsInsideBounds(bounds.center))
+            return false;
+
+        return true;
     }
 
     private void ShowBuildButtons()
@@ -199,42 +260,6 @@ public class GridMovement : MonoBehaviour
         if (col != null) return col.bounds;
 
         return new Bounds(transform.position, Vector3.one * gSize);
-    }
-
-    private bool CanPlaceAt(Vector3 targetPos, float gSize)
-    {
-        Bounds bounds = GetBounds(gSize);
-        Vector3 offset = targetPos - transform.position;
-        bounds.center += offset;
-
-        int widthInCells = Mathf.CeilToInt(bounds.size.x / gSize);
-        int heightInCells = Mathf.CeilToInt(bounds.size.y / gSize);
-
-        float startX = Mathf.Round(bounds.min.x / gSize) * gSize;
-        float startY = Mathf.Round(bounds.min.y / gSize) * gSize;
-
-        for (int ix = 0; ix < widthInCells; ix++)
-        {
-            for (int iy = 0; iy < heightInCells; iy++)
-            {
-                Vector3 cellCenter = new Vector3(
-                    startX + ix * gSize + gSize / 2f,
-                    startY + iy * gSize + gSize / 2f,
-                    targetPos.z);
-
-                if (!GridBoundaryController.Instance.IsInsideBounds(cellCenter))
-                    return false;
-
-                Collider2D[] hits = Physics2D.OverlapPointAll(cellCenter);
-                foreach (var hit in hits)
-                {
-                    if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
-                        return false;
-                }
-            }
-        }
-
-        return true;
     }
 
     private bool IsPointerOverThisObject(Vector3 screenPos)
@@ -263,5 +288,14 @@ public class GridMovement : MonoBehaviour
     public void DenyBuild()
     {
         LevelController.Instance.DenyBuild();
+    }
+
+    // --- Рисование проверочного бокса ---
+    private void OnDrawGizmos()
+    {
+        if (!drawDebug) return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(debugBounds.center, debugBounds.size);
     }
 }
