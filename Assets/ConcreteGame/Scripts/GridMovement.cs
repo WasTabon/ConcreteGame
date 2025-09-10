@@ -4,26 +4,28 @@ using UnityEngine.UI;
 
 public class GridMovement : MonoBehaviour
 {
-    [SerializeField] private float _animSpeed;
-    
+    [SerializeField] private float _animSpeed = 0.15f;
     [SerializeField] private bool _isBuilded;
-    
+
+    [Header("UI кнопки")]
     [SerializeField] private RectTransform _yesButton;
     [SerializeField] private RectTransform _noButton;
-    
+
     [SerializeField] private float gridSize = 1f;
+
     private Camera mainCamera;
     private bool isDragging = false;
     private bool hasNeighbor = false;
+    private int fingerId = -1; // отслеживание тача
+    private Tween moveTween;   // твины движения
 
     void Start()
     {
         mainCamera = Camera.main;
-        
-        _yesButton.DOScale(Vector3.zero, 0)
-            .SetEase(Ease.InBack);
-        _noButton.DOScale(Vector3.zero, 0)
-            .SetEase(Ease.InBack);
+
+        // Скрыть кнопки при старте
+        _yesButton.localScale = Vector3.zero;
+        _noButton.localScale = Vector3.zero;
 
         _yesButton.gameObject.GetComponent<Button>().onClick.AddListener(AlLowBuild);
         _noButton.gameObject.GetComponent<Button>().onClick.AddListener(DenyBuild);
@@ -32,8 +34,20 @@ public class GridMovement : MonoBehaviour
     void Update()
     {
         if (_isBuilded) return;
-        
-        // --- ПК (мышь) ---
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+        HandleMouseInput();
+#else
+        HandleTouchInput();
+#endif
+
+        if (isDragging)
+            DragToGrid();
+    }
+
+    // --- ПК управление ---
+    private void HandleMouseInput()
+    {
         if (Input.GetMouseButtonDown(0))
         {
             if (IsPointerOverThisObject(Input.mousePosition))
@@ -41,53 +55,47 @@ public class GridMovement : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0))
             isDragging = false;
+    }
 
-        // --- Телефон (тач) ---
+    // --- Мобильное управление ---
+    private void HandleTouchInput()
+    {
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
+            foreach (Touch touch in Input.touches)
+            {
+                if (touch.phase == TouchPhase.Began)
+                {
+                    if (IsPointerOverThisObject(touch.position))
+                    {
+                        isDragging = true;
+                        fingerId = touch.fingerId;
+                    }
+                }
 
-            if (touch.phase == TouchPhase.Began && IsPointerOverThisObject(touch.position))
-                isDragging = true;
-
-            if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-                isDragging = false;
+                if (touch.fingerId == fingerId &&
+                   (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled))
+                {
+                    isDragging = false;
+                    fingerId = -1;
+                }
+            }
         }
-
-        // --- Двигаем, если держим ---
-        if (isDragging)
-            DragToGrid();
     }
 
-    public void AlLowBuild()
-    {
-        _isBuilded = true;
-        
-        _yesButton.DOScale(Vector3.zero, _animSpeed)
-            .SetEase(Ease.InBack);
-        _noButton.DOScale(Vector3.zero, _animSpeed)
-            .SetEase(Ease.InBack);
-        
-        LevelController.Instance.AllowBuild();
-    }
-    public void DenyBuild()
-    {
-        LevelController.Instance.DenyBuild();
-    }
-    
     private void DragToGrid()
     {
-        Vector3 screenPos = Input.touchCount > 0 ?
-            (Vector3)Input.GetTouch(0).position :
-            Input.mousePosition;
+        Vector3 screenPos = Input.touchCount > 0 && fingerId != -1
+            ? (Vector3)Input.GetTouch(fingerId).position
+            : Input.mousePosition;
 
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
 
-        float gSize = GridBoundaryController.Instance != null ? GridBoundaryController.Instance.GridSize : gridSize;
+        float gSize = GridBoundaryController.Instance != null
+            ? GridBoundaryController.Instance.GridSize
+            : gridSize;
 
-        // --- Размер объекта ---
         Bounds bounds = GetBounds(gSize);
-
         Vector3 size = bounds.size;
 
         float snappedX = Mathf.Round((worldPos.x - size.x / 2f) / gSize) * gSize + size.x / 2f;
@@ -97,11 +105,12 @@ public class GridMovement : MonoBehaviour
         worldPos.y = snappedY;
         worldPos.z = transform.position.z;
 
-        // Проверка: можно ли сюда встать?
         if (CanPlaceAt(worldPos, gSize))
         {
-            transform.position = worldPos;
-            
+            // плавное движение вместо телепорта
+            moveTween?.Kill();
+            moveTween = transform.DOMove(worldPos, 0.1f).SetEase(Ease.OutQuad);
+
             CheckNeighbors();
         }
     }
@@ -139,18 +148,22 @@ public class GridMovement : MonoBehaviour
                 foreach (var dir in directions)
                 {
                     Vector3 checkPos = cellCenter + dir;
-                    Collider2D hit = Physics2D.OverlapPoint(checkPos);
+                    Collider2D[] hits = Physics2D.OverlapPointAll(checkPos);
 
-                    if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
+                    foreach (var hit in hits)
                     {
-                        foundNeighbor = true;
-                        break;
+                        if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
+                        {
+                            foundNeighbor = true;
+                            break;
+                        }
                     }
+
+                    if (foundNeighbor) break;
                 }
             }
         }
 
-        // только если состояние изменилось
         if (foundNeighbor && !hasNeighbor)
         {
             hasNeighbor = true;
@@ -166,22 +179,17 @@ public class GridMovement : MonoBehaviour
     private void ShowBuildButtons()
     {
         Sequence sequence = DOTween.Sequence();
-
-        sequence.Join(_yesButton.DOScale(Vector3.one, _animSpeed)
-            .SetEase(Ease.InBack));
-        sequence.Join(_noButton.DOScale(Vector3.one, _animSpeed)
-            .SetEase(Ease.InBack));
+        sequence.Join(_yesButton.DOScale(Vector3.one, _animSpeed).SetEase(Ease.OutBack));
+        sequence.Join(_noButton.DOScale(Vector3.one, _animSpeed).SetEase(Ease.OutBack));
     }
+
     private void HideBuildButtons()
     {
         Sequence sequence = DOTween.Sequence();
-
-        sequence.Join(_yesButton.DOScale(Vector3.zero, _animSpeed)
-            .SetEase(Ease.InBack));
-        sequence.Join(_noButton.DOScale(Vector3.zero, _animSpeed)
-            .SetEase(Ease.InBack));
+        sequence.Join(_yesButton.DOScale(Vector3.zero, _animSpeed).SetEase(Ease.InBack));
+        sequence.Join(_noButton.DOScale(Vector3.zero, _animSpeed).SetEase(Ease.InBack));
     }
-    
+
     private Bounds GetBounds(float gSize)
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
@@ -213,14 +221,15 @@ public class GridMovement : MonoBehaviour
                     startX + ix * gSize + gSize / 2f,
                     startY + iy * gSize + gSize / 2f,
                     targetPos.z);
-                
+
                 if (!GridBoundaryController.Instance.IsInsideBounds(cellCenter))
                     return false;
 
-                Collider2D hit = Physics2D.OverlapPoint(cellCenter);
-                if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
+                Collider2D[] hits = Physics2D.OverlapPointAll(cellCenter);
+                foreach (var hit in hits)
                 {
-                    return false;
+                    if (hit != null && hit.GetComponent<GridMovement>() != null && hit.gameObject != gameObject)
+                        return false;
                 }
             }
         }
@@ -233,7 +242,26 @@ public class GridMovement : MonoBehaviour
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
         Vector2 worldPos2D = new Vector2(worldPos.x, worldPos.y);
 
-        RaycastHit2D hit = Physics2D.Raycast(worldPos2D, Vector2.zero);
-        return hit.collider != null && hit.collider.transform == transform;
+        RaycastHit2D[] hits = Physics2D.RaycastAll(worldPos2D, Vector2.zero);
+
+        foreach (var hit in hits)
+        {
+            if (hit.collider != null && hit.collider.transform == transform)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void AlLowBuild()
+    {
+        _isBuilded = true;
+        HideBuildButtons();
+        LevelController.Instance.AllowBuild();
+    }
+
+    public void DenyBuild()
+    {
+        LevelController.Instance.DenyBuild();
     }
 }
