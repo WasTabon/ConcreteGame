@@ -506,7 +506,7 @@ GameObject:
   - component: {fileID: 2572815442005268602}
   - component: {fileID: 5867564824174670046}
   m_Layer: 0
-  m_Name: GridBuilding
+  m_Name: GridBuilding_Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -664,7 +664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a025258560d094a8392d599b647d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animSpeed: 0.3
+  _animSpeed: 0.15
   _yesButton: {fileID: 7589843442561892992}
   _noButton: {fileID: 6715664782388859330}
   gridSize: 0.5

@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridMovement : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GridMovement : MonoBehaviour
     private Camera mainCamera;
     private bool isDragging = false;
     private bool hasNeighbor = false;
+    private bool _isBuilded;
 
     void Start()
     {
@@ -21,10 +23,15 @@ public class GridMovement : MonoBehaviour
             .SetEase(Ease.InBack);
         _noButton.DOScale(Vector3.zero, 0)
             .SetEase(Ease.InBack);
+
+        _yesButton.gameObject.GetComponent<Button>().onClick.AddListener(AlLowBuild);
+        _noButton.gameObject.GetComponent<Button>().onClick.AddListener(DenyBuild);
     }
 
     void Update()
     {
+        if (_isBuilded) return;
+        
         // --- ПК (мышь) ---
         if (Input.GetMouseButtonDown(0))
         {
@@ -51,6 +58,20 @@ public class GridMovement : MonoBehaviour
             DragToGrid();
     }
 
+    public void AlLowBuild()
+    {
+        _isBuilded = true;
+        
+        _yesButton.DOScale(Vector3.zero, _animSpeed)
+            .SetEase(Ease.InBack);
+        _noButton.DOScale(Vector3.zero, _animSpeed)
+            .SetEase(Ease.InBack);
+    }
+    public void DenyBuild()
+    {
+        gameObject.SetActive(false);
+    }
+    
     private void DragToGrid()
     {
         Vector3 screenPos = Input.touchCount > 0 ?
