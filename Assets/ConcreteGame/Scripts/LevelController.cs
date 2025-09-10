@@ -38,6 +38,7 @@ public class LevelController : MonoBehaviour
 
     public void AllowBuild()
     {
+        _currentButton.SetActive(false);
         _buildingsCount++;
         _buildingsCountText.text = $"{_buildingsCount}/{_neededBuldings}";
 
@@ -60,6 +61,9 @@ public class LevelController : MonoBehaviour
 
     public void StartGame()
     {
+        _startGameButton.DOScale(Vector3.zero, 0.3f)
+            .SetEase(Ease.InBack);
+        
         GridBoundaryController.Instance.HideGrid();
         
         GridMovement[] gridMovements = FindObjectsOfType<GridMovement>();
@@ -78,13 +82,23 @@ public class LevelController : MonoBehaviour
             return;
         }
 
+        _currentButton = button;
+        
         float gSize = grid.GridSize;
 
-        // Получаем границы сетки через публичные методы/свойства
-        Vector3 min = grid.GetBottomLeft(); // <- нужно добавить этот метод в GridBoundaryController
-        Vector3 max = grid.GetTopRight();   // <- и этот метод
+        // Получаем границы сетки
+        Vector3 min = grid.GetBottomLeft();
+        Vector3 max = grid.GetTopRight();
 
         List<Vector2> freeCells = new List<Vector2>();
+
+        // Размер коллайдера у префаба
+        Collider2D prefabCollider = prefab.GetComponent<Collider2D>();
+        Vector2 checkSize = Vector2.one * gSize * 0.9f; // дефолт, если нет коллайдера
+        if (prefabCollider != null)
+        {
+            checkSize = prefabCollider.bounds.size;
+        }
 
         for (float x = min.x + gSize / 2f; x <= max.x; x += gSize)
         {
@@ -92,9 +106,9 @@ public class LevelController : MonoBehaviour
             {
                 Vector2 cellCenter = new Vector2(x, y);
 
-                // Проверка через Physics2D — есть ли GridMovement
-                Collider2D hit = Physics2D.OverlapPoint(cellCenter);
-                if (hit != null && hit.GetComponent<GridMovement>() != null)
+                // Проверяем пространство под объект
+                Collider2D hit = Physics2D.OverlapBox(cellCenter, checkSize, 0f);
+                if (hit != null)
                     continue;
 
                 freeCells.Add(cellCenter);
@@ -107,14 +121,14 @@ public class LevelController : MonoBehaviour
             return;
         }
 
+        // Берём случайную клетку
         Vector2 chosenCell = freeCells[Random.Range(0, freeCells.Count)];
-
         Vector3 spawnPos = new Vector3(chosenCell.x, chosenCell.y, 0);
+
         GameObject obj = Instantiate(prefab, spawnPos, prefab.transform.rotation);
 
         _currentObject = obj;
-        button.SetActive(false);
-        
+
         UIController.Instance.CloseBuildingPanel();
     }
 }
