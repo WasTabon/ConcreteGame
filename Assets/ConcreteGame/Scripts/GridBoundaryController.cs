@@ -1,12 +1,13 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class GridBoundaryController : MonoBehaviour
 {
     public static GridBoundaryController Instance { get; private set; }
 
     public bool showGrid = true;
-    
+
     [Header("Углы области")]
     [SerializeField] private Transform bottomLeft;
     [SerializeField] private Transform topRight;
@@ -14,6 +15,7 @@ public class GridBoundaryController : MonoBehaviour
     [Header("Сетка")]
     [SerializeField] private float gridSize = 1f;
     [SerializeField] private Color gridColor = Color.green;
+    [SerializeField] private float lineWidth = 0.02f;
     [SerializeField] private Material lineMaterial;
 
     [Header("Анимация")]
@@ -21,8 +23,9 @@ public class GridBoundaryController : MonoBehaviour
     [SerializeField] private Ease animationEase = Ease.Linear;
 
     private float minX, maxX, minY, maxY;
-    
     private float animationProgress = 0f;
+
+    private readonly List<LineRenderer> gridLines = new();
 
     private void Awake()
     {
@@ -38,6 +41,7 @@ public class GridBoundaryController : MonoBehaviour
 
     private void Start()
     {
+        GenerateGrid();
         AnimateGrid();
     }
 
@@ -58,88 +62,77 @@ public class GridBoundaryController : MonoBehaviour
         maxY = Mathf.Ceil(rawMaxY / gSize) * gSize;
     }
 
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
+    private void GenerateGrid()
     {
-        if (!showGrid) return;
-        if (bottomLeft == null || topRight == null) return;
-
-        UpdateBounds();
+        // Очистить старые линии
+        foreach (var line in gridLines)
+        {
+            if (line != null) Destroy(line.gameObject);
+        }
+        gridLines.Clear();
 
         float gSize = Mathf.Max(0.1f, gridSize);
-        Gizmos.color = gridColor;
 
+        // Вертикальные линии
         for (float x = minX; x <= maxX; x += gSize)
         {
-            Vector3 from = new Vector3(x, minY, 0);
-            Vector3 to = new Vector3(x, maxY, 0);
-            Gizmos.DrawLine(from, to);
+            CreateLine(new Vector3(x, minY, 0), new Vector3(x, maxY, 0));
         }
 
+        // Горизонтальные линии
         for (float y = minY; y <= maxY; y += gSize)
         {
-            Vector3 from = new Vector3(minX, y, 0);
-            Vector3 to = new Vector3(maxX, y, 0);
-            Gizmos.DrawLine(from, to);
+            CreateLine(new Vector3(minX, y, 0), new Vector3(maxX, y, 0));
         }
     }
-#endif
 
-    private void OnRenderObject()
+    private void CreateLine(Vector3 start, Vector3 end)
     {
-        if (lineMaterial == null) return;
+        GameObject go = new GameObject("GridLine");
+        go.transform.parent = transform;
 
-        lineMaterial.SetPass(0);
-        GL.PushMatrix();
-        GL.Begin(GL.LINES);
-        GL.Color(gridColor);
+        LineRenderer lr = go.AddComponent<LineRenderer>();
+        lr.positionCount = 2;
+        lr.SetPositions(new Vector3[] { start, end });
+        lr.material = lineMaterial != null ? lineMaterial : new Material(Shader.Find("Sprites/Default"));
+        lr.startColor = gridColor;
+        lr.endColor = gridColor;
+        lr.startWidth = lineWidth;
+        lr.endWidth = lineWidth;
+        lr.useWorldSpace = true;
 
-        float gSize = Mathf.Max(0.1f, gridSize);
-
-        int cols = Mathf.CeilToInt((maxX - minX) / gSize);
-        int rows = Mathf.CeilToInt((maxY - minY) / gSize);
-
-        int totalCells = cols * rows;
-
-        int visibleCells = Mathf.FloorToInt(totalCells * animationProgress);
-
-        int drawn = 0;
-
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < cols; c++)
-            {
-                if (drawn >= visibleCells) break;
-
-                float x = minX + c * gSize;
-                float y = minY + r * gSize;
-
-                Vector3 bl = new Vector3(x, y, 0);            
-                Vector3 br = new Vector3(x + gSize, y, 0);       
-                Vector3 tr = new Vector3(x + gSize, y + gSize, 0); 
-                Vector3 tl = new Vector3(x, y + gSize, 0);
-                
-                GL.Vertex(bl); GL.Vertex(br);
-                GL.Vertex(br); GL.Vertex(tr);
-                GL.Vertex(tr); GL.Vertex(tl);
-                GL.Vertex(tl); GL.Vertex(bl);
-
-                drawn++;
-            }
-            if (drawn >= visibleCells) break;
-        }
-
-        GL.End();
-        GL.PopMatrix();
+        gridLines.Add(lr);
     }
 
     public void AnimateGrid()
     {
         animationProgress = 0f;
+
         DOTween.To(() => animationProgress, x => animationProgress = x, 1f, animationDuration)
-            .SetEase(animationEase);
+            .SetEase(animationEase)
+            .OnUpdate(UpdateLineVisibility);
     }
 
+    private void UpdateLineVisibility()
+    {
+        int visibleCount = Mathf.FloorToInt(gridLines.Count * animationProgress);
+
+        for (int i = 0; i < gridLines.Count; i++)
+        {
+            gridLines[i].enabled = (i < visibleCount);
+        }
+    }
+
+    public Vector3 GetBottomLeft()
+    {
+        return bottomLeft.position;
+    }
+
+    public Vector3 GetTopRight()
+    {
+        return topRight.position;
+    }
+    
     public Vector3 ClampToBounds(Vector3 pos)
     {
         pos.x = Mathf.Clamp(pos.x, minX, maxX);
@@ -154,4 +147,33 @@ public class GridBoundaryController : MonoBehaviour
         return pos.x >= minX && pos.x <= maxX &&
                pos.y >= minY && pos.y <= maxY;
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!showGrid) return;
+        if (bottomLeft == null || topRight == null) return;
+
+        UpdateBounds();
+
+        float gSize = Mathf.Max(0.1f, gridSize);
+        Gizmos.color = gridColor;
+
+        // Вертикальные линии
+        for (float x = minX; x <= maxX; x += gSize)
+        {
+            Vector3 from = new Vector3(x, minY, 0);
+            Vector3 to = new Vector3(x, maxY, 0);
+            Gizmos.DrawLine(from, to);
+        }
+
+        // Горизонтальные линии
+        for (float y = minY; y <= maxY; y += gSize)
+        {
+            Vector3 from = new Vector3(minX, y, 0);
+            Vector3 to = new Vector3(maxX, y, 0);
+            Gizmos.DrawLine(from, to);
+        }
+    }
+#endif
 }

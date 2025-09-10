@@ -6,6 +6,8 @@ public class GridMovement : MonoBehaviour
 {
     [SerializeField] private float _animSpeed;
     
+    [SerializeField] private bool _isBuilded;
+    
     [SerializeField] private RectTransform _yesButton;
     [SerializeField] private RectTransform _noButton;
     
@@ -13,7 +15,6 @@ public class GridMovement : MonoBehaviour
     private Camera mainCamera;
     private bool isDragging = false;
     private bool hasNeighbor = false;
-    private bool _isBuilded;
 
     void Start()
     {
@@ -69,7 +70,7 @@ public class GridMovement : MonoBehaviour
     }
     public void DenyBuild()
     {
-        gameObject.SetActive(false);
+        LevelController.Instance.DenyBuild();
     }
     
     private void DragToGrid()

@@ -506,7 +506,7 @@ GameObject:
   - component: {fileID: 2572815442005268602}
   - component: {fileID: 5867564824174670046}
   m_Layer: 0
-  m_Name: GridBuilding_Line
+  m_Name: GridBuilding_Horizontal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
