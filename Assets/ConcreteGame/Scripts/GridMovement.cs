@@ -67,6 +67,8 @@ public class GridMovement : MonoBehaviour
             .SetEase(Ease.InBack);
         _noButton.DOScale(Vector3.zero, _animSpeed)
             .SetEase(Ease.InBack);
+        
+        LevelController.Instance.AllowBuild();
     }
     public void DenyBuild()
     {

@@ -1,11 +1,19 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using DG.Tweening;
+using TMPro;
 using Random = UnityEngine.Random;
 
 public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
+
+    [SerializeField] private int _neededBuldings;
+    private int _buildingsCount;
+
+    [SerializeField] private TextMeshProUGUI _buildingsCountText;
+    [SerializeField] private RectTransform _startGameButton;
     
     [SerializeField] private GridBoundaryController grid;
 
@@ -17,6 +25,12 @@ public class LevelController : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        _startGameButton.DOScale(Vector3.zero, 0f);
+        _buildingsCountText.text = $"0/{_neededBuldings}";
+    }
+
     public void DenyBuild()
     {
         _currentObject.SetActive(false);
@@ -24,7 +38,24 @@ public class LevelController : MonoBehaviour
 
     public void AllowBuild()
     {
-        _currentButton.SetActive(false);
+        _buildingsCount++;
+        _buildingsCountText.text = $"{_buildingsCount}/{_neededBuldings}";
+
+        if (_buildingsCount >= _neededBuldings)
+        {
+            ShowStartGameButton();
+        }
+    }
+
+    private void ShowStartGameButton()
+    {
+        _buildingsCountText.rectTransform.DOScale(Vector3.zero, 0.3f)
+            .SetEase(Ease.InBack)
+            .OnComplete((() =>
+            {
+                _startGameButton.DOScale(Vector3.one, 0.3f)
+                    .SetEase(Ease.InBack);
+            }));
     }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)
