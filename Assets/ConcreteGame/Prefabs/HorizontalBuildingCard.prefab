@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_AnchorMin.x
@@ -38,15 +38,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -78,11 +78,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 650
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -200
       objectReference: {fileID: 0}
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 4558559825022170419}
-  prefab: {fileID: 1139686923814574092}
+  prefab: {fileID: 5234841741281765379, guid: b49b181098658314faeb7aa28e1bf921, type: 3}
 --- !u!114 &4558559825022170419 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4288977455334055080, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}

@@ -10,6 +10,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] private GridBoundaryController grid;
 
     private GameObject _currentObject;
+    private GameObject _currentButton;
 
     private void Awake()
     {
@@ -19,10 +20,14 @@ public class LevelController : MonoBehaviour
     public void DenyBuild()
     {
         _currentObject.SetActive(false);
-        UIController.Instance.OpenBuildingPanel();
+    }
+
+    public void AllowBuild()
+    {
+        _currentButton.SetActive(false);
     }
     
-    public void SpawnOnGrid(GameObject prefab)
+    public void SpawnOnGrid(GameObject prefab, GameObject button)
     {
         if (grid == null || prefab == null)
         {
@@ -63,6 +68,8 @@ public class LevelController : MonoBehaviour
 
         Vector3 spawnPos = new Vector3(chosenCell.x, chosenCell.y, 0);
         GameObject obj = Instantiate(prefab, spawnPos, prefab.transform.rotation);
+
+        _currentObject = obj;
         
         UIController.Instance.CloseBuildingPanel();
     }
