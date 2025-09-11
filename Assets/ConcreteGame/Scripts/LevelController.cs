@@ -9,6 +9,10 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
 
+    [SerializeField] private RectTransform _menuButton;
+    [SerializeField] private RectTransform _panel1;
+    [SerializeField] private RectTransform _panel2;
+    
     [SerializeField] private int _neededBuldings;
     private int _buildingsCount;
 
@@ -68,14 +72,23 @@ public class LevelController : MonoBehaviour
         _startGameButton.DOScale(Vector3.zero, 0.3f)
             .SetEase(Ease.InBack);
         
-        GridBoundaryController.Instance.HideGrid();
+        _menuButton.DOScale(Vector3.zero, 0.3f)
+            .SetEase(Ease.InBack);
+        _panel1.DOScale(Vector3.zero, 0.3f)
+            .SetEase(Ease.InBack);
+        _panel2.DOScale(Vector3.zero, 0.3f)
+            .SetEase(Ease.InBack)
+            .OnComplete((() =>
+            {
+                GridBoundaryController.Instance.HideGrid();
         
-        GridMovement[] gridMovements = FindObjectsOfType<GridMovement>();
+                GridMovement[] gridMovements = FindObjectsOfType<GridMovement>();
 
-        foreach (var gm in gridMovements)
-        {
-            gm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-        }
+                foreach (var gm in gridMovements)
+                {
+                    gm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                }
+            }));
     }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)

@@ -662,6 +662,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c99210faf074244a4620622e5da377, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _menuButton: {fileID: 660688084}
+  _panel1: {fileID: 1629201115}
+  _panel2: {fileID: 1403951266}
   _neededBuldings: 4
   _buildingsCountText: {fileID: 1129287368}
   _startGameButton: {fileID: 72286939}
