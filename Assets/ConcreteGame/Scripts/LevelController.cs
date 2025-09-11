@@ -116,22 +116,43 @@ public class LevelController : MonoBehaviour
         float gSize = grid.GridSize;
 
         // Получаем границы сетки
-        Vector3 min = grid.GetBottomLeft();
-        Vector3 max = grid.GetTopRight();
+        Vector3 gridMin = grid.GetBottomLeft();
+        Vector3 gridMax = grid.GetTopRight();
 
-        // Определяем размер проверки на основе префаба
-        Vector2 checkSize = GetPrefabCheckSize(prefab, gSize);
+        // Определяем размер объекта
+        Vector2 objectSize = GetPrefabSize(prefab);
 
         List<Vector2> allCells = new List<Vector2>();
-        List<Vector2> freeCells = new List<Vector2>();
 
-        // Собираем все возможные позиции на сетке
-        for (float x = min.x + gSize / 2f; x <= max.x; x += gSize)
+        // Рассчитываем допустимые границы для центра объекта с учетом его размера
+        float minX = gridMin.x + objectSize.x / 2f;
+        float maxX = gridMax.x - objectSize.x / 2f;
+        float minY = gridMin.y + objectSize.y / 2f;
+        float maxY = gridMax.y - objectSize.y / 2f;
+
+        // Проверяем, что объект вообще может поместиться в сетку
+        if (minX > maxX || minY > maxY)
         {
-            for (float y = min.y + gSize / 2f; y <= max.y; y += gSize)
+            Debug.LogWarning($"Объект слишком большой для сетки! Размер объекта: {objectSize}, размер сетки: {gridMax - gridMin}");
+            return Vector2.zero;
+        }
+
+        // Собираем все возможные позиции на сетке с учетом размера объекта
+        for (float x = minX; x <= maxX; x += gSize)
+        {
+            for (float y = minY; y <= maxY; y += gSize)
             {
-                Vector2 cellCenter = new Vector2(x, y);
-                allCells.Add(cellCenter);
+                // Привязываем к сетке
+                float alignedX = Mathf.Round(x / gSize) * gSize;
+                float alignedY = Mathf.Round(y / gSize) * gSize;
+                
+                // Проверяем, что выровненная позиция все еще в допустимых границах
+                if (alignedX >= minX && alignedX <= maxX && 
+                    alignedY >= minY && alignedY <= maxY)
+                {
+                    Vector2 cellCenter = new Vector2(alignedX, alignedY);
+                    allCells.Add(cellCenter);
+                }
             }
         }
 
@@ -147,7 +168,7 @@ public class LevelController : MonoBehaviour
         // Проверяем каждую позицию на свободность
         foreach (Vector2 cellCenter in allCells)
         {
-            if (IsCellFree(cellCenter, checkSize))
+            if (IsPositionFree(cellCenter, objectSize))
             {
                 return cellCenter;
             }
@@ -157,51 +178,73 @@ public class LevelController : MonoBehaviour
         return Vector2.zero;
     }
 
-    private Vector2 GetPrefabCheckSize(GameObject prefab, float gSize)
+    private Vector2 GetPrefabSize(GameObject prefab)
     {
-        // Получаем размер из коллайдера префаба
-        Collider2D prefabCollider = prefab.GetComponent<Collider2D>();
+        Vector2 size = Vector2.one;
+
+        // Создаем временный объект для точного измерения
+        GameObject tempObj = Instantiate(prefab);
+    
+        // Пробуем получить размер из коллайдера
+        Collider2D prefabCollider = tempObj.GetComponent<Collider2D>();
         if (prefabCollider != null)
         {
-            return prefabCollider.bounds.size;
+            size = prefabCollider.bounds.size;
         }
-
-        // Получаем размер из SpriteRenderer префаба
-        SpriteRenderer prefabSprite = prefab.GetComponent<SpriteRenderer>();
-        if (prefabSprite != null && prefabSprite.sprite != null)
+        else
         {
-            return prefabSprite.bounds.size;
+            // Если коллайдера нет, пробуем SpriteRenderer
+            SpriteRenderer prefabSprite = tempObj.GetComponent<SpriteRenderer>();
+            if (prefabSprite != null && prefabSprite.sprite != null)
+            {
+                size = prefabSprite.bounds.size;
+            }
+            else
+            {
+                size = Vector2.one * grid.GridSize;
+            }
         }
-
-        // Дефолтный размер равный одной клетке сетки
-        return Vector2.one * gSize;
+    
+        // Удаляем временный объект
+        DestroyImmediate(tempObj);
+    
+        return size;
     }
 
-    private bool IsCellFree(Vector2 position, Vector2 checkSize)
+    private bool IsPositionFree(Vector2 centerPosition, Vector2 objectSize)
     {
-        // Проверяем наличие коллайдеров в данной позиции
-        // Используем размер чуть меньше для избежания ложных срабатываний на границах
-        Vector2 adjustedSize = checkSize * 0.95f;
-        
-        Collider2D[] overlapping = Physics2D.OverlapBoxAll(position, adjustedSize, 0f);
-        
-        // Проверяем все найденные коллайдеры
+        // Проверяем, что весь объект помещается в границы сетки
+        Vector2 halfSize = objectSize / 2f;
+        Vector3 gridMin = grid.GetBottomLeft();
+        Vector3 gridMax = grid.GetTopRight();
+
+        float leftEdge = centerPosition.x - halfSize.x;
+        float rightEdge = centerPosition.x + halfSize.x;
+        float bottomEdge = centerPosition.y - halfSize.y;
+        float topEdge = centerPosition.y + halfSize.y;
+
+        // Проверяем границы сетки
+        float epsilon = 0.01f;
+        if (leftEdge < gridMin.x + epsilon || 
+            rightEdge > gridMax.x - epsilon || 
+            bottomEdge < gridMin.y + epsilon || 
+            topEdge > gridMax.y - epsilon)
+        {
+            return false;
+        }
+
+        // ВАЖНО: используем полный размер объекта, а не уменьшенный
+        Vector2 checkSize = objectSize;
+    
+        Collider2D[] overlapping = Physics2D.OverlapBoxAll(centerPosition, checkSize, 0f);
+    
         foreach (Collider2D col in overlapping)
         {
-            if (col != null)
+            if (col != null && !col.isTrigger)
             {
-                // Игнорируем триггеры (если они есть)
-                if (col.isTrigger)
-                    continue;
-                    
-                // Если нашли любой не-триггер коллайдер, позиция занята
                 return false;
             }
         }
-
-        // Проверяем, что позиция находится в границах сетки
-        if (!grid.IsInsideBounds(position))
-            return false;
 
         return true;
     }
@@ -210,18 +253,21 @@ public class LevelController : MonoBehaviour
     public Vector2 FindNearestFreePosition(Vector2 preferredPosition, GameObject prefab)
     {
         float gSize = grid.GridSize;
-        Vector2 checkSize = GetPrefabCheckSize(prefab, gSize);
+        Vector2 objectSize = GetPrefabSize(prefab);
 
         // Сначала проверяем предпочитаемую позицию
-        if (IsCellFree(preferredPosition, checkSize))
+        if (IsPositionFree(preferredPosition, objectSize))
         {
             return preferredPosition;
         }
 
         // Спиральный поиск вокруг предпочитаемой позиции
+        Vector3 gridMin = grid.GetBottomLeft();
+        Vector3 gridMax = grid.GetTopRight();
+        
         int maxRadius = Mathf.Max(
-            Mathf.CeilToInt((grid.GetTopRight().x - grid.GetBottomLeft().x) / gSize),
-            Mathf.CeilToInt((grid.GetTopRight().y - grid.GetBottomLeft().y) / gSize)
+            Mathf.CeilToInt((gridMax.x - gridMin.x) / gSize),
+            Mathf.CeilToInt((gridMax.y - gridMin.y) / gSize)
         );
 
         for (int radius = 1; radius <= maxRadius; radius++)
@@ -235,7 +281,7 @@ public class LevelController : MonoBehaviour
                     {
                         Vector2 testPosition = preferredPosition + new Vector2(x * gSize, y * gSize);
                         
-                        if (IsCellFree(testPosition, checkSize))
+                        if (IsPositionFree(testPosition, objectSize))
                         {
                             return testPosition;
                         }
@@ -245,5 +291,30 @@ public class LevelController : MonoBehaviour
         }
 
         return Vector2.zero; // Не найдено свободного места
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        if (grid != null)
+        {
+            // Рисуем сетку для дебага
+            Vector3 gridMin = grid.GetBottomLeft();
+            Vector3 gridMax = grid.GetTopRight();
+            float gSize = grid.GridSize;
+        
+            Gizmos.color = Color.green;
+        
+            // Рисуем горизонтальные линии
+            for (float y = gridMin.y; y <= gridMax.y; y += gSize)
+            {
+                Gizmos.DrawLine(new Vector3(gridMin.x, y, 0), new Vector3(gridMax.x, y, 0));
+            }
+        
+            // Рисуем вертикальные линии
+            for (float x = gridMin.x; x <= gridMax.x; x += gSize)
+            {
+                Gizmos.DrawLine(new Vector3(x, gridMin.y, 0), new Vector3(x, gridMax.y, 0));
+            }
+        }
     }
 }

@@ -267,15 +267,40 @@ public class GridMovement : MonoBehaviour
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
         Vector2 worldPos2D = new Vector2(worldPos.x, worldPos.y);
 
+        // Получаем все объекты в этой точке
         RaycastHit2D[] hits = Physics2D.RaycastAll(worldPos2D, Vector2.zero);
-
+    
+        // Ищем самый верхний объект (по Z-coordinate или по порядку рендеринга)
+        RaycastHit2D topHit = default;
+        float highestZ = float.MinValue;
+    
         foreach (var hit in hits)
         {
-            if (hit.collider != null && hit.collider.transform == transform)
-                return true;
+            if (hit.collider != null && !hit.collider.isTrigger)
+            {
+                float zPos = hit.collider.transform.position.z;
+                if (zPos > highestZ)
+                {
+                    highestZ = zPos;
+                    topHit = hit;
+                }
+            }
         }
+    
+        // Проверяем, является ли самый верхний объект нашим
+        return topHit.collider != null && topHit.collider.transform == transform;
+    }
+    
+    private bool IsPointerOverThisObjectWithLayer(Vector3 screenPos)
+    {
+        Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
+        Vector2 worldPos2D = new Vector2(worldPos.x, worldPos.y);
 
-        return false;
+        // Проверяем только объекты на том же слое
+        int layerMask = 1 << gameObject.layer;
+        RaycastHit2D hit = Physics2D.Raycast(worldPos2D, Vector2.zero, Mathf.Infinity, layerMask);
+    
+        return hit.collider != null && hit.collider.transform == transform;
     }
 
     public void AlLowBuild()
