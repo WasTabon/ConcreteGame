@@ -49,6 +49,7 @@ public class LevelController : MonoBehaviour
         {
             ShowStartGameButton();
         }
+        _currentObject = null;
     }
 
     private void ShowStartGameButton()
