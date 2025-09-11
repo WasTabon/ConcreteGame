@@ -47,10 +47,21 @@ public class LevelController : MonoBehaviour
         _meteorIconInitialPos = _meteorIcon.anchoredPosition;
         _meteorsBackgroundInitialPos = _meteorsBackground.anchoredPosition;
         
-        // Скрываем панель метеоритов в начале
-        _meteorsPanel.gameObject.SetActive(false);
+        // Правильно скрываем элементы в начале
+        InitializeMeteorElements();
         
         // зробити землетрус, метеорити і ше шось і то всьо з анімаціями і шоб то відбувалось після start game і після того як пропадуть всі ui елементи і зробити шоб якшо вибрав елемент для постройки, але відкрив елементи і нажав на інший то воно замінило його
+    }
+
+    private void InitializeMeteorElements()
+    {
+        // Скрываем панель метеоритов в начале
+        _meteorsPanel.gameObject.SetActive(false);
+        _meteorsPanel.localScale = Vector3.zero;
+        
+        // Прячем элементы за пределы экрана
+        _meteorIcon.anchoredPosition = _meteorIconInitialPos + Vector3.right * 2000f; // Прячем справа
+        _meteorsBackground.anchoredPosition = _meteorsBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
     }
 
     public void DenyBuild()
@@ -115,50 +126,44 @@ public class LevelController : MonoBehaviour
     {
         // Показываем панель метеоритов
         _meteorsPanel.gameObject.SetActive(true);
-        _meteorsPanel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
-        {
-            // Анимация MeteorIcon - приезжает справа налево
-            Vector3 rightOffScreen = _meteorIconInitialPos + Vector3.right * 1000f;
-            _meteorIcon.anchoredPosition = rightOffScreen;
-            
-            _meteorIcon.DOAnchorPos(_meteorIconInitialPos, 0.5f)
-                .SetEase(Ease.OutQuart)
-                .OnComplete(() =>
-                {
-                    // Анимация MeteorsBackground - выезжает слева направо
-                    Vector3 leftOffScreen = _meteorsBackgroundInitialPos + Vector3.left * 1000f;
-                    _meteorsBackground.anchoredPosition = leftOffScreen;
-                    
-                    _meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos, 0.5f)
-                        .SetEase(Ease.OutQuart)
-                        .OnComplete(() =>
-                        {
-                            // Стоим на месте 0.5 секунды
-                            DOVirtual.DelayedCall(0.5f, () =>
-                            {
-                                // Прячем элементы назад
-                                HideMeteorElements();
-                            });
-                        });
-                });
-        });
+        
+        // Анимируем появление панели
+        _meteorsPanel.DOScale(Vector3.one, 0.3f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                // Создаем последовательность анимаций
+                Sequence meteorSequence = DOTween.Sequence();
+                
+                // 1. Анимация MeteorIcon - въезжает справа налево
+                meteorSequence.Append(_meteorIcon.DOAnchorPos(_meteorIconInitialPos, 0.6f)
+                    .SetEase(Ease.OutQuart));
+                
+                // 2. Анимация MeteorsBackground - въезжает слева направо (с небольшой задержкой)
+                meteorSequence.Insert(0.2f, _meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos, 0.6f)
+                    .SetEase(Ease.OutQuart));
+                
+                // 3. Пауза на позициях (0.5 секунды после завершения въезда)
+                meteorSequence.AppendInterval(0.5f);
+                
+                // 4. Прячем элементы обратно
+                meteorSequence.AppendCallback(() => HideMeteorElements());
+            });
     }
 
     private void HideMeteorElements()
     {
         Sequence hideSequence = DOTween.Sequence();
         
-        // Прячем MeteorIcon вправо
-        hideSequence.Append(_meteorIcon.DOAnchorPos(_meteorIconInitialPos + Vector3.right * 1000f, 0.4f)
+        // Прячем MeteorIcon вправо за пределы экрана (влетает вправо)
+        hideSequence.Append(_meteorIcon.DOAnchorPos(_meteorIconInitialPos + Vector3.right * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // Прячем MeteorsBackground влево (параллельно)
-        hideSequence.Join(_meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos + Vector3.left * 1000f, 0.4f)
+        // Прячем MeteorsBackground влево за пределы экрана (влетает влево) - параллельно
+        hideSequence.Join(_meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos + Vector3.left * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // Прячем всю панель
-        hideSequence.Append(_meteorsPanel.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack));
-        
+        // После того как элементы уехали за пределы экрана, просто отключаем панель
         hideSequence.OnComplete(() =>
         {
             _meteorsPanel.gameObject.SetActive(false);

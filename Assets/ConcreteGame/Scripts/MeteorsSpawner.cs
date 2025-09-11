@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class MeteorsSpawner : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float downForce = 5f; // Сила вниз
     [SerializeField] private float maxSideForce = 2f; // Максимальная боковая сила для отклонения
+    
+    [Header("Sequential Spawn Settings")]
+    [SerializeField] private float spawnDelay = 0.5f; // Задержка между спавном объектов в секундах
     
     // Singleton instance
     private static MeteorsSpawner _instance;
@@ -37,6 +41,9 @@ public class MeteorsSpawner : MonoBehaviour
     // Список заспавненных объектов
     private List<GameObject> spawnedObjects = new List<GameObject>();
     
+    // Корутина для отслеживания процесса спавна
+    private Coroutine currentSpawnCoroutine;
+    
     private void Awake()
     {
         // Проверяем, что это единственный экземпляр
@@ -51,7 +58,7 @@ public class MeteorsSpawner : MonoBehaviour
     }
     
     /// <summary>
-    /// Спавнит объекты в рандомных позициях
+    /// Спавнит объекты в рандомных позициях по очереди
     /// </summary>
     public void SpawnObjects()
     {
@@ -67,6 +74,12 @@ public class MeteorsSpawner : MonoBehaviour
             return;
         }
         
+        // Останавливаем предыдущий спавн, если он еще выполняется
+        if (currentSpawnCoroutine != null)
+        {
+            StopCoroutine(currentSpawnCoroutine);
+        }
+        
         ClearPreviousObjects();
         
         float leftX = leftBound.position.x;
@@ -80,6 +93,17 @@ public class MeteorsSpawner : MonoBehaviour
             rightX = temp;
         }
         
+        // Запускаем корутину для последовательного спавна
+        currentSpawnCoroutine = StartCoroutine(SpawnObjectsSequentially(leftX, rightX));
+    }
+    
+    /// <summary>
+    /// Корутина для последовательного спавна объектов
+    /// </summary>
+    private IEnumerator SpawnObjectsSequentially(float leftX, float rightX)
+    {
+        Debug.Log($"Starting sequential spawn of {objectCount} objects...");
+        
         for (int i = 0; i < objectCount; i++)
         {
             // Генерируем рандомную X позицию между границами
@@ -92,20 +116,30 @@ public class MeteorsSpawner : MonoBehaviour
             
             // Добавляем движение
             AddMovementToMeteor(spawnedObject);
+            
+            Debug.Log($"Spawned object {i + 1}/{objectCount} at position: {spawnPosition}");
+            
+            // Ждем перед спавном следующего объекта (кроме последнего)
+            if (i < objectCount - 1)
+            {
+                yield return new WaitForSeconds(spawnDelay);
+            }
         }
         
-        Debug.Log($"Spawned {objectCount} objects between X: {leftX} and X: {rightX} at Y: {fixedY}");
+        Debug.Log($"Sequential spawn completed! Total objects: {objectCount}");
+        currentSpawnCoroutine = null;
     }
     
     /// <summary>
-    /// Спавнит объекты с кастомными параметрами
+    /// Спавнит объекты с кастомными параметрами по очереди
     /// </summary>
     /// <param name="prefab">Префаб для спавна</param>
     /// <param name="count">Количество объектов</param>
     /// <param name="yPosition">Y позиция</param>
     /// <param name="minX">Минимальная X позиция</param>
     /// <param name="maxX">Максимальная X позиция</param>
-    public void SpawnObjects(GameObject prefab, int count, float yPosition, float minX, float maxX)
+    /// <param name="customSpawnDelay">Кастомная задержка между спавном (если null - используется стандартная)</param>
+    public void SpawnObjects(GameObject prefab, int count, float yPosition, float minX, float maxX, float? customSpawnDelay = null)
     {
         if (prefab == null)
         {
@@ -113,7 +147,27 @@ public class MeteorsSpawner : MonoBehaviour
             return;
         }
         
+        // Останавливаем предыдущий спавн, если он еще выполняется
+        if (currentSpawnCoroutine != null)
+        {
+            StopCoroutine(currentSpawnCoroutine);
+        }
+        
         ClearPreviousObjects();
+        
+        // Используем кастомную задержку или стандартную
+        float delayToUse = customSpawnDelay ?? spawnDelay;
+        
+        // Запускаем корутину для последовательного спавна
+        currentSpawnCoroutine = StartCoroutine(SpawnObjectsSequentiallyCustom(prefab, count, yPosition, minX, maxX, delayToUse));
+    }
+    
+    /// <summary>
+    /// Корутина для последовательного спавна объектов с кастомными параметрами
+    /// </summary>
+    private IEnumerator SpawnObjectsSequentiallyCustom(GameObject prefab, int count, float yPosition, float minX, float maxX, float delay)
+    {
+        Debug.Log($"Starting custom sequential spawn of {count} objects...");
         
         for (int i = 0; i < count; i++)
         {
@@ -125,9 +179,18 @@ public class MeteorsSpawner : MonoBehaviour
             
             // Добавляем движение
             AddMovementToMeteor(spawnedObject);
+            
+            Debug.Log($"Spawned custom object {i + 1}/{count} at position: {spawnPosition}");
+            
+            // Ждем перед спавном следующего объекта (кроме последнего)
+            if (i < count - 1)
+            {
+                yield return new WaitForSeconds(delay);
+            }
         }
         
-        Debug.Log($"Spawned {count} objects between X: {minX} and X: {maxX} at Y: {yPosition}");
+        Debug.Log($"Custom sequential spawn completed! Total objects: {count}");
+        currentSpawnCoroutine = null;
     }
     
     /// <summary>
@@ -147,6 +210,27 @@ public class MeteorsSpawner : MonoBehaviour
             // Применяем силу
             rb.AddForce(force, ForceMode2D.Impulse);
         }
+    }
+    
+    /// <summary>
+    /// Останавливает текущий процесс спавна
+    /// </summary>
+    public void StopSpawning()
+    {
+        if (currentSpawnCoroutine != null)
+        {
+            StopCoroutine(currentSpawnCoroutine);
+            currentSpawnCoroutine = null;
+            Debug.Log("Spawning process stopped.");
+        }
+    }
+    
+    /// <summary>
+    /// Проверяет, выполняется ли сейчас процесс спавна
+    /// </summary>
+    public bool IsSpawning()
+    {
+        return currentSpawnCoroutine != null;
     }
     
     /// <summary>
@@ -211,6 +295,14 @@ public class MeteorsSpawner : MonoBehaviour
     public void SetMaxSideForce(float force)
     {
         maxSideForce = force;
+    }
+    
+    /// <summary>
+    /// Установить задержку между спавном объектов
+    /// </summary>
+    public void SetSpawnDelay(float delay)
+    {
+        spawnDelay = delay;
     }
     
     private void OnDestroy()
