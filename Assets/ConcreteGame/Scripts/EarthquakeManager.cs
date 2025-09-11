@@ -8,10 +8,6 @@ public class EarthquakeManager : MonoBehaviour
     [SerializeField] private float amplitude = 0.5f; // Амплитуда тряски
     [SerializeField] private float frequency = 10f; // Частота тряски
     
-    [Header("Physics Settings")]
-    [SerializeField] private float physicsForceMultiplier = 10f; // Множитель силы для физического воздействия
-    [SerializeField] private bool usePhysicsForTargetObject = true; // Использовать физику для targetObject
-    
     // Singleton instance
     private static EarthquakeManager _instance;
     public static EarthquakeManager Instance
@@ -35,11 +31,7 @@ public class EarthquakeManager : MonoBehaviour
     // Ссылки на камеру и объект для тряски
     [Header("References")]
     [SerializeField] private Camera targetCamera;
-    [SerializeField] private Transform targetObject; // Объект, который будет трястися
-    
-    // Компоненты для физики
-    private Rigidbody2D targetObjectRb2D;
-    private bool wasKinematic; // Сохраняем изначальное состояние kinematic
+    [SerializeField] private Transform targetObject; // Объект, который будет трястись (опционально)
     
     // Оригинальные позиции для восстановления
     private Vector3 originalCameraPosition;
@@ -71,8 +63,6 @@ public class EarthquakeManager : MonoBehaviour
             }
         }
         
-        InitializeTargetObject();
-        
         // Сохраняем оригинальные позиции
         if (targetCamera != null)
         {
@@ -82,26 +72,6 @@ public class EarthquakeManager : MonoBehaviour
         if (targetObject != null)
         {
             originalObjectPosition = targetObject.position;
-        }
-    }
-    
-    private void InitializeTargetObject()
-    {
-        if (targetObject != null)
-        {
-            // Получаем Rigidbody2D компонент
-            targetObjectRb2D = targetObject.GetComponent<Rigidbody2D>();
-            
-            if (targetObjectRb2D != null)
-            {
-                // Сохраняем изначальное состояние kinematic
-                wasKinematic = targetObjectRb2D.isKinematic;
-                Debug.Log($"Target object Rigidbody2D found. Original kinematic state: {wasKinematic}");
-            }
-            else if (usePhysicsForTargetObject)
-            {
-                Debug.LogWarning("Target object doesn't have Rigidbody2D component, but physics is enabled for it!");
-            }
         }
     }
     
@@ -127,9 +97,9 @@ public class EarthquakeManager : MonoBehaviour
             return;
         }
         
-        if (targetCamera == null && targetObject == null)
+        if (targetCamera == null)
         {
-            Debug.LogError("Neither target camera nor target object is assigned!");
+            Debug.LogError("Target camera is not assigned!");
             return;
         }
         
@@ -149,7 +119,6 @@ public class EarthquakeManager : MonoBehaviour
         }
         
         RestorePositions();
-        RestorePhysicsState();
         isEarthquakeActive = false;
         
         Debug.Log("Earthquake stopped manually.");
@@ -159,9 +128,6 @@ public class EarthquakeManager : MonoBehaviour
     {
         isEarthquakeActive = true;
         float elapsedTime = 0f;
-        
-        // Подготавливаем физику для targetObject
-        PreparePhysicsForEarthquake();
     
         while (elapsedTime < shakeDuration)
         {
@@ -181,69 +147,30 @@ public class EarthquakeManager : MonoBehaviour
             // Создаем вектор смещения
             Vector3 shakeOffset = new Vector3(offsetX, offsetY, 0);
         
-            // Применяем тряску к камере (по-прежнему через позицию)
+            // Применяем тряску к камере
             if (targetCamera != null)
             {
                 Vector3 newCameraPos = originalCameraPosition + shakeOffset;
                 targetCamera.transform.position = newCameraPos;
             }
         
-            // Применяем тряску к объекту через физику или позицию
+            // Применяем тряску к объекту (если назначен)
             if (targetObject != null)
             {
-                if (usePhysicsForTargetObject && targetObjectRb2D != null)
-                {
-                    // Применяем силу к Rigidbody2D
-                    Vector2 force = new Vector2(offsetX, offsetY) * physicsForceMultiplier;
-                    targetObjectRb2D.AddForce(force, ForceMode2D.Force);
-                }
-                else
-                {
-                    // Применяем тряску через позицию (старый способ)
-                    Vector3 newObjectPos = originalObjectPosition + shakeOffset;
-                    targetObject.position = newObjectPos;
-                }
+                Vector3 newObjectPos = originalObjectPosition + shakeOffset;
+                targetObject.position = newObjectPos;
             }
         
             elapsedTime += Time.deltaTime;
             yield return null;
         }
     
-        // Восстанавливаем оригинальные позиции и состояния
+        // Восстанавливаем оригинальные позиции
         RestorePositions();
-        RestorePhysicsState();
         isEarthquakeActive = false;
         earthquakeCoroutine = null;
     
         Debug.Log("Earthquake completed.");
-    }
-    
-    private void PreparePhysicsForEarthquake()
-    {
-        if (usePhysicsForTargetObject && targetObjectRb2D != null)
-        {
-            // Временно делаем объект не-кинематическим для применения сил
-            if (targetObjectRb2D.isKinematic)
-            {
-                targetObjectRb2D.isKinematic = false;
-                Debug.Log("Target object set to non-kinematic for earthquake physics.");
-            }
-        }
-    }
-    
-    private void RestorePhysicsState()
-    {
-        if (usePhysicsForTargetObject && targetObjectRb2D != null)
-        {
-            // Останавливаем все движение
-            targetObjectRb2D.velocity = Vector2.zero;
-            targetObjectRb2D.angularVelocity = 0f;
-            
-            // Восстанавливаем изначальное состояние kinematic
-            targetObjectRb2D.isKinematic = wasKinematic;
-            
-            Debug.Log($"Physics state restored. Kinematic: {wasKinematic}");
-        }
     }
     
     /// <summary>
@@ -256,9 +183,8 @@ public class EarthquakeManager : MonoBehaviour
             targetCamera.transform.position = originalCameraPosition;
         }
         
-        if (targetObject != null && (!usePhysicsForTargetObject || targetObjectRb2D == null))
+        if (targetObject != null)
         {
-            // Восстанавливаем позицию только если не используем физику
             targetObject.position = originalObjectPosition;
         }
     }
@@ -289,28 +215,10 @@ public class EarthquakeManager : MonoBehaviour
     public void SetTargetObject(Transform obj)
     {
         targetObject = obj;
-        InitializeTargetObject();
-        
         if (obj != null && !isEarthquakeActive)
         {
             originalObjectPosition = obj.position;
         }
-    }
-    
-    /// <summary>
-    /// Устанавливает использование физики для targetObject
-    /// </summary>
-    public void SetUsePhysicsForTargetObject(bool usePhysics)
-    {
-        usePhysicsForTargetObject = usePhysics;
-    }
-    
-    /// <summary>
-    /// Устанавливает множитель силы для физического воздействия
-    /// </summary>
-    public void SetPhysicsForceMultiplier(float multiplier)
-    {
-        physicsForceMultiplier = multiplier;
     }
     
     /// <summary>
