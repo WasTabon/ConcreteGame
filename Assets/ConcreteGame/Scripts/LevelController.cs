@@ -87,6 +87,7 @@ public class LevelController : MonoBehaviour
                 foreach (var gm in gridMovements)
                 {
                     gm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                    gm.GetComponent<Rigidbody2D>().mass = 5f;
                 }
             }));
     }
