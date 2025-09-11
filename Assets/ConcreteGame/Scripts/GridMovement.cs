@@ -12,6 +12,9 @@ public class GridMovement : MonoBehaviour
     [SerializeField] private RectTransform _noButton;
 
     [SerializeField] private float gridSize = 1f;
+    
+    [Header("Настройки проскока")]
+    [SerializeField] private bool allowPassthrough = true; // включить проскок через препятствия
 
     private Camera mainCamera;
     private bool isDragging = false;
@@ -112,11 +115,47 @@ public class GridMovement : MonoBehaviour
 
         Vector3 targetPos = new Vector3(snappedX, snappedY, transform.position.z);
 
-        if (CanMoveToPosition(targetPos, gSize))
+        // Новая логика: если включен проскок и позиция пальца свободна, двигаемся туда
+        if (allowPassthrough && CanMoveToPositionWithPassthrough(targetPos, gSize))
         {
             moveTween?.Kill();
             moveTween = transform.DOMove(targetPos, 0.1f).SetEase(Ease.OutQuad);
         }
+        // Если проскок отключен, используем старую логику
+        else if (!allowPassthrough && CanMoveToPosition(targetPos, gSize))
+        {
+            moveTween?.Kill();
+            moveTween = transform.DOMove(targetPos, 0.1f).SetEase(Ease.OutQuad);
+        }
+    }
+
+    /// <summary>
+    /// Новый метод для проверки возможности движения с проскоком через препятствия
+    /// </summary>
+    private bool CanMoveToPositionWithPassthrough(Vector3 targetPos, float gSize)
+    {
+        // Проверяем, что в целевой позиции нет коллизий
+        Bounds bounds = GetBounds(gSize);
+        bounds.center = targetPos;
+
+        // --- DEBUG ---
+        debugBounds = bounds;
+        drawDebug = true;
+
+        // Проверяем коллизии в целевой позиции
+        Collider2D[] hits = Physics2D.OverlapBoxAll(bounds.center, bounds.size * 0.9f, 0f);
+
+        foreach (var hit in hits)
+        {
+            if (hit != null && hit.gameObject != gameObject)
+                return false; // В целевой позиции есть препятствие
+        }
+
+        // Проверяем границы
+        if (GridBoundaryController.Instance != null && !GridBoundaryController.Instance.IsInsideBounds(bounds.center))
+            return false;
+
+        return true; // Целевая позиция свободна, можно двигаться
     }
 
     private void CheckNeighbors()
@@ -155,13 +194,16 @@ public class GridMovement : MonoBehaviour
                 {
                     foundNeighbor = true;
                     
-                    // Блокируем направление к найденному соседу
-                    switch (i)
+                    // Блокируем направление к найденному соседу только если проскок отключен
+                    if (!allowPassthrough)
                     {
-                        case 0: blockRight = true; break;  // блокируем движение вправо
-                        case 1: blockLeft = true; break;   // блокируем движение влево
-                        case 2: blockUp = true; break;     // блокируем движение вверх
-                        case 3: blockDown = true; break;   // блокируем движение вниз
+                        switch (i)
+                        {
+                            case 0: blockRight = true; break;  // блокируем движение вправо
+                            case 1: blockLeft = true; break;   // блокируем движение влево
+                            case 2: blockUp = true; break;     // блокируем движение вверх
+                            case 3: blockDown = true; break;   // блокируем движение вниз
+                        }
                     }
                     break;
                 }
