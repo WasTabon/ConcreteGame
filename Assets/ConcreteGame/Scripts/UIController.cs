@@ -103,22 +103,25 @@ public class UIController : MonoBehaviour
 
     public void CloseBuildingPanel()
     {
-        // Просто выключаем фон и панель без анимации
-        if (panel != null)
-            panel.gameObject.SetActive(false);
-
-        if (backgroundObject != null)
-            backgroundObject.SetActive(false);
-
-        // Сразу скрываем контент без анимации
         if (content != null)
         {
-            foreach (Transform child in content)
-            {
-                CanvasGroup cg = child.GetComponent<CanvasGroup>();
-                if (cg != null) cg.alpha = 0;
-                child.localScale = Vector3.one * 0.8f;
-            }
+            AnimateContent(false, () => {
+                // Отключаем панель и фон только после завершения анимации
+                if (panel != null)
+                    panel.gameObject.SetActive(false);
+            
+                if (backgroundObject != null)
+                    backgroundObject.SetActive(false);
+            });
+        }
+        else
+        {
+            // Если нет контента, отключаем сразу
+            if (panel != null)
+                panel.gameObject.SetActive(false);
+        
+            if (backgroundObject != null)
+                backgroundObject.SetActive(false);
         }
     }
 

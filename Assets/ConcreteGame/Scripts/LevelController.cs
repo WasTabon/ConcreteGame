@@ -292,29 +292,4 @@ public class LevelController : MonoBehaviour
 
         return Vector2.zero; // Не найдено свободного места
     }
-    
-    private void OnDrawGizmosSelected()
-    {
-        if (grid != null)
-        {
-            // Рисуем сетку для дебага
-            Vector3 gridMin = grid.GetBottomLeft();
-            Vector3 gridMax = grid.GetTopRight();
-            float gSize = grid.GridSize;
-        
-            Gizmos.color = Color.green;
-        
-            // Рисуем горизонтальные линии
-            for (float y = gridMin.y; y <= gridMax.y; y += gSize)
-            {
-                Gizmos.DrawLine(new Vector3(gridMin.x, y, 0), new Vector3(gridMax.x, y, 0));
-            }
-        
-            // Рисуем вертикальные линии
-            for (float x = gridMin.x; x <= gridMax.x; x += gSize)
-            {
-                Gizmos.DrawLine(new Vector3(x, gridMin.y, 0), new Vector3(x, gridMax.y, 0));
-            }
-        }
-    }
 }
