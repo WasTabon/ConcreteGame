@@ -669,6 +669,14 @@ MonoBehaviour:
   _buildingsCountText: {fileID: 1129287368}
   _startGameButton: {fileID: 72286939}
   grid: {fileID: 1067766177}
+  _meteorsPanel: {fileID: 385073787}
+  _meteorIcon: {fileID: 339896181}
+  _meteorsBackground: {fileID: 635347535}
+  _meteorPrefab: {fileID: 0}
+  _leftSpawnBound: {fileID: 0}
+  _rightSpawnBound: {fileID: 0}
+  _spawnY: 10
+  _meteorCount: 5
 --- !u!1 &249390682
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,6 +1182,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385073786}
   m_CullTransparentMesh: 1
+--- !u!1 &400576119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 400576120}
+  - component: {fileID: 400576121}
+  m_Layer: 0
+  m_Name: MeteorsSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400576120
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400576119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1158492319}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &400576121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400576119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d58315e32479b3418b8e661701cb8b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 3104810925865165778, guid: 30dc77891ea35824ba5f21b677d2d077, type: 3}
+  fixedY: 6
+  leftBound: {fileID: 1517981667}
+  rightBound: {fileID: 1530428235}
+  objectCount: 5
 --- !u!1001 &430714356
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2543,6 +2600,7 @@ Transform:
   - {fileID: 158511097}
   - {fileID: 1067766176}
   - {fileID: 1818612516}
+  - {fileID: 400576120}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1193035899
@@ -2862,6 +2920,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1515513861}
   m_CullTransparentMesh: 1
+--- !u!1 &1517981666
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1517981667}
+  m_Layer: 0
+  m_Name: LeftBorderMeteors
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1517981667
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517981666}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.4, y: 6, z: -0.013500323}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1530428234
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1530428235}
+  m_Layer: 0
+  m_Name: RightBorderMeteors
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1530428235
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530428234}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.22, y: 6, z: -0.013500323}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1555471700
 GameObject:
   m_ObjectHideFlags: 0
@@ -4209,3 +4329,5 @@ SceneRoots:
   - {fileID: 1555471703}
   - {fileID: 523965884}
   - {fileID: 1158492319}
+  - {fileID: 1517981667}
+  - {fileID: 1530428235}

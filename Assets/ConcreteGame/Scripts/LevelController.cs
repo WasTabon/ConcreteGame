@@ -21,8 +21,17 @@ public class LevelController : MonoBehaviour
     
     [SerializeField] private GridBoundaryController grid;
 
+    [Header("Meteors Animation")]
+    [SerializeField] private RectTransform _meteorsPanel;
+    [SerializeField] private RectTransform _meteorIcon;
+    [SerializeField] private RectTransform _meteorsBackground;
+
     private GameObject _currentObject;
     private GameObject _currentButton;
+
+    // Запоминаем изначальные позиции для анимации
+    private Vector3 _meteorIconInitialPos;
+    private Vector3 _meteorsBackgroundInitialPos;
 
     private void Awake()
     {
@@ -33,6 +42,13 @@ public class LevelController : MonoBehaviour
     {
         _startGameButton.DOScale(Vector3.zero, 0f);
         _buildingsCountText.text = $"0/{_neededBuldings}";
+        
+        // Запоминаем изначальные позиции элементов
+        _meteorIconInitialPos = _meteorIcon.anchoredPosition;
+        _meteorsBackgroundInitialPos = _meteorsBackground.anchoredPosition;
+        
+        // Скрываем панель метеоритов в начале
+        _meteorsPanel.gameObject.SetActive(false);
         
         // зробити землетрус, метеорити і ше шось і то всьо з анімаціями і шоб то відбувалось після start game і після того як пропадуть всі ui елементи і зробити шоб якшо вибрав елемент для постройки, але відкрив елементи і нажав на інший то воно замінило його
     }
@@ -89,7 +105,75 @@ public class LevelController : MonoBehaviour
                     gm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                     gm.GetComponent<Rigidbody2D>().mass = 5f;
                 }
+                
+                // Запускаем анимацию метеоритов
+                StartMeteorAnimation();
             }));
+    }
+
+    private void StartMeteorAnimation()
+    {
+        // Показываем панель метеоритов
+        _meteorsPanel.gameObject.SetActive(true);
+        _meteorsPanel.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+        {
+            // Анимация MeteorIcon - приезжает справа налево
+            Vector3 rightOffScreen = _meteorIconInitialPos + Vector3.right * 1000f;
+            _meteorIcon.anchoredPosition = rightOffScreen;
+            
+            _meteorIcon.DOAnchorPos(_meteorIconInitialPos, 0.5f)
+                .SetEase(Ease.OutQuart)
+                .OnComplete(() =>
+                {
+                    // Анимация MeteorsBackground - выезжает слева направо
+                    Vector3 leftOffScreen = _meteorsBackgroundInitialPos + Vector3.left * 1000f;
+                    _meteorsBackground.anchoredPosition = leftOffScreen;
+                    
+                    _meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos, 0.5f)
+                        .SetEase(Ease.OutQuart)
+                        .OnComplete(() =>
+                        {
+                            // Стоим на месте 0.5 секунды
+                            DOVirtual.DelayedCall(0.5f, () =>
+                            {
+                                // Прячем элементы назад
+                                HideMeteorElements();
+                            });
+                        });
+                });
+        });
+    }
+
+    private void HideMeteorElements()
+    {
+        Sequence hideSequence = DOTween.Sequence();
+        
+        // Прячем MeteorIcon вправо
+        hideSequence.Append(_meteorIcon.DOAnchorPos(_meteorIconInitialPos + Vector3.right * 1000f, 0.4f)
+            .SetEase(Ease.InQuart));
+        
+        // Прячем MeteorsBackground влево (параллельно)
+        hideSequence.Join(_meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos + Vector3.left * 1000f, 0.4f)
+            .SetEase(Ease.InQuart));
+        
+        // Прячем всю панель
+        hideSequence.Append(_meteorsPanel.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack));
+        
+        hideSequence.OnComplete(() =>
+        {
+            _meteorsPanel.gameObject.SetActive(false);
+            
+            // Настраиваем ObjectSpawner и вызываем спавн метеоритов
+            SpawnMeteors();
+        });
+    }
+
+    private void SpawnMeteors()
+    {
+        // Просто вызываем спавн с настройками из MeteorsSpawner
+        MeteorsSpawner.Instance.SpawnObjects();
+        
+        Debug.Log("Meteors spawned!");
     }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)
