@@ -10,6 +10,10 @@ public class MeteorsSpawner : MonoBehaviour
     [SerializeField] private Transform rightBound; // Правая граница для X
     [SerializeField] private int objectCount = 5; // Количество объектов для спавна
     
+    [Header("Movement Settings")]
+    [SerializeField] private float downForce = 5f; // Сила вниз
+    [SerializeField] private float maxSideForce = 2f; // Максимальная боковая сила для отклонения
+    
     // Singleton instance
     private static MeteorsSpawner _instance;
     public static MeteorsSpawner Instance
@@ -85,6 +89,9 @@ public class MeteorsSpawner : MonoBehaviour
             // Спавним объект
             GameObject spawnedObject = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
             spawnedObjects.Add(spawnedObject);
+            
+            // Добавляем движение
+            AddMovementToMeteor(spawnedObject);
         }
         
         Debug.Log($"Spawned {objectCount} objects between X: {leftX} and X: {rightX} at Y: {fixedY}");
@@ -115,9 +122,31 @@ public class MeteorsSpawner : MonoBehaviour
             
             GameObject spawnedObject = Instantiate(prefab, spawnPosition, Quaternion.identity);
             spawnedObjects.Add(spawnedObject);
+            
+            // Добавляем движение
+            AddMovementToMeteor(spawnedObject);
         }
         
         Debug.Log($"Spawned {count} objects between X: {minX} and X: {maxX} at Y: {yPosition}");
+    }
+    
+    /// <summary>
+    /// Добавляет движение метеору
+    /// </summary>
+    private void AddMovementToMeteor(GameObject meteor)
+    {
+        Rigidbody2D rb = meteor.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            // Рандомное боковое отклонение
+            float sideForce = Random.Range(-maxSideForce, maxSideForce);
+            
+            // Создаем вектор силы (всегда вниз + небольшое боковое отклонение)
+            Vector2 force = new Vector2(sideForce, -downForce);
+            
+            // Применяем силу
+            rb.AddForce(force, ForceMode2D.Impulse);
+        }
     }
     
     /// <summary>
@@ -166,6 +195,22 @@ public class MeteorsSpawner : MonoBehaviour
     public void SetObjectCount(int count)
     {
         objectCount = count;
+    }
+    
+    /// <summary>
+    /// Установить силу падения
+    /// </summary>
+    public void SetDownForce(float force)
+    {
+        downForce = force;
+    }
+    
+    /// <summary>
+    /// Установить максимальную боковую силу
+    /// </summary>
+    public void SetMaxSideForce(float force)
+    {
+        maxSideForce = force;
     }
     
     private void OnDestroy()
