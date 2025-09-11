@@ -29,11 +29,14 @@ public class LevelController : MonoBehaviour
     {
         _startGameButton.DOScale(Vector3.zero, 0f);
         _buildingsCountText.text = $"0/{_neededBuldings}";
+        
+        // зробити землетрус, метеорити і ше шось і то всьо з анімаціями і шоб то відбувалось після start game і після того як пропадуть всі ui елементи і зробити шоб якшо вибрав елемент для постройки, але відкрив елементи і нажав на інший то воно замінило його
     }
 
     public void DenyBuild()
     {
         _currentObject.SetActive(false);
+        _currentObject = null;
     }
 
     public void AllowBuild()
@@ -82,6 +85,12 @@ public class LevelController : MonoBehaviour
             return;
         }
 
+        if (_currentObject != null)
+        {
+            _currentObject.SetActive(false);
+            _currentObject = null;
+        }
+        
         _currentButton = button;
         
         Vector2 spawnPosition = FindFreeSpawnPosition(prefab);
