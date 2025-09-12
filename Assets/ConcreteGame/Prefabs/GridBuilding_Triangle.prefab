@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 8510943365695725461}
   - component: {fileID: 4625533510976152541}
   - component: {fileID: 820915919606985251}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GridBuilding_Triangle
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -180,6 +180,7 @@ MonoBehaviour:
   _yesButton: {fileID: 943924521688136815}
   _noButton: {fileID: 7321563548446314734}
   gridSize: 0.5
+  allowPassthrough: 1
 --- !u!1 &1971370999461786534
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,7 +192,7 @@ GameObject:
   - component: {fileID: 7851459526366140898}
   - component: {fileID: 7192136809696552334}
   - component: {fileID: 7361457543339738508}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -326,7 +327,7 @@ GameObject:
   - component: {fileID: 19015823670015136}
   - component: {fileID: 3520451038547662561}
   - component: {fileID: 6728436993999899060}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: YesButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -447,7 +448,7 @@ GameObject:
   - component: {fileID: 4291463392509547854}
   - component: {fileID: 6845218033856521324}
   - component: {fileID: 1108840398023648624}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -550,7 +551,7 @@ GameObject:
   - component: {fileID: 254015581755740177}
   - component: {fileID: 6559702371812476194}
   - component: {fileID: 6346531875413659030}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NoButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -670,7 +671,7 @@ GameObject:
   - component: {fileID: 2457690908117204610}
   - component: {fileID: 4168065742136887239}
   - component: {fileID: 8155758971074551643}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

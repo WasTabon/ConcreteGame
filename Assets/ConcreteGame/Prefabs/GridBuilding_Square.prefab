@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7124938482971255952}
   - component: {fileID: 1029139240094873206}
   - component: {fileID: 5345650502248762046}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -114,7 +114,7 @@ GameObject:
   - component: {fileID: 7026918628300276932}
   - component: {fileID: 1867497275184212647}
   - component: {fileID: 6816002420426407652}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 6095160652475298666}
   - component: {fileID: 7199087295753514282}
   - component: {fileID: 3204545204625982244}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 5776069572401309431}
   - component: {fileID: 1306817198967766721}
   - component: {fileID: 549467665376107635}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NoButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -504,7 +504,7 @@ GameObject:
   - component: {fileID: 665284956356148872}
   - component: {fileID: 4973802571606344072}
   - component: {fileID: 8278257050118461063}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: YesButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -626,9 +626,9 @@ GameObject:
   - component: {fileID: 8655996426240542187}
   - component: {fileID: 1985650418596342697}
   - component: {fileID: 8279624948138836399}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GridBuilding_Square
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -790,3 +790,4 @@ MonoBehaviour:
   _yesButton: {fileID: 5900216414934835177}
   _noButton: {fileID: 5643321632810570029}
   gridSize: 0.5
+  allowPassthrough: 1

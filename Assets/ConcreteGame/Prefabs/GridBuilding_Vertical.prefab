@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1262281813099985750}
   - component: {fileID: 2088300437608394507}
   - component: {fileID: 3671877443716424727}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NoButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 8914323191686725374}
   - component: {fileID: 7289759366849299705}
   - component: {fileID: 4328319962550347232}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: YesButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,7 +254,7 @@ GameObject:
   - component: {fileID: 5489566496348862537}
   - component: {fileID: 6217443236797048622}
   - component: {fileID: 1024703054111459393}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,9 +358,9 @@ GameObject:
   - component: {fileID: 5487764389867766397}
   - component: {fileID: 3948438700654437198}
   - component: {fileID: 1615457170569355686}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GridBuilding_Vertical
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -522,6 +522,7 @@ MonoBehaviour:
   _yesButton: {fileID: 5069606703897269413}
   _noButton: {fileID: 550547778555078389}
   gridSize: 0.5
+  allowPassthrough: 1
 --- !u!1 &7240587953326680795
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,7 +534,7 @@ GameObject:
   - component: {fileID: 3271285073060455576}
   - component: {fileID: 1976882412700018960}
   - component: {fileID: 1285537378390010217}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -667,7 +668,7 @@ GameObject:
   - component: {fileID: 9024460647691656329}
   - component: {fileID: 5010994045589459753}
   - component: {fileID: 7910241970415880524}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
