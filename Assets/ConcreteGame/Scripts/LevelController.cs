@@ -39,6 +39,12 @@ public class LevelController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private EarthquakeManager _earthquakeManager;
+    
+    [Header("Stars System")]
+    private int totalStars = 0;
+    private List<GridMovement> gridMovements = new List<GridMovement>();
+    private List<Vector3> initialPositions = new List<Vector3>();
+    private List<Vector3> initialRotations = new List<Vector3>();
 
     private GameObject _currentObject;
     private GameObject _currentButton;
@@ -159,6 +165,7 @@ public class LevelController : MonoBehaviour
                 {
                     gm.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                     gm.GetComponent<Rigidbody2D>().mass = 5f;
+                    SaveInitialTransforms(gridMovements);
                 }
                 
                 // Запускаем анимацию метеоритов
@@ -166,6 +173,68 @@ public class LevelController : MonoBehaviour
             }));
     }
 
+    private void SaveInitialTransforms(GridMovement[] gridMovements)
+{
+    this.gridMovements.Clear();
+    initialPositions.Clear();
+    initialRotations.Clear();
+    
+    foreach (var gm in gridMovements)
+    {
+        this.gridMovements.Add(gm);
+        initialPositions.Add(gm.transform.position);
+        initialRotations.Add(gm.transform.eulerAngles);
+    }
+    
+    Debug.Log($"Saved initial transforms for {gridMovements.Length} GridMovement objects");
+}
+
+private void CheckObjectsStability(string testName)
+{
+    bool allObjectsStable = true;
+    
+    for (int i = 0; i < gridMovements.Count; i++)
+    {
+        if (gridMovements[i] == null) continue;
+        
+        Vector3 currentPos = gridMovements[i].transform.position;
+        Vector3 currentRot = gridMovements[i].transform.eulerAngles;
+        Vector3 initialPos = initialPositions[i];
+        Vector3 initialRot = initialRotations[i];
+        
+        // Проверяем отклонение по Y позиции (20%)
+        float posYDeviation = Mathf.Abs(currentPos.y - initialPos.y) / Mathf.Abs(initialPos.y);
+        if (posYDeviation > 0.2f)
+        {
+            allObjectsStable = false;
+            Debug.Log($"Object {i} failed Y position check: deviation {posYDeviation:P1}");
+            break;
+        }
+        
+        // Проверяем отклонение ротации по всем осям (20%)
+        float rotXDeviation = Mathf.Abs(Mathf.DeltaAngle(currentRot.x, initialRot.x)) / 360f;
+        float rotYDeviation = Mathf.Abs(Mathf.DeltaAngle(currentRot.y, initialRot.y)) / 360f;
+        float rotZDeviation = Mathf.Abs(Mathf.DeltaAngle(currentRot.z, initialRot.z)) / 360f;
+        
+        if (rotXDeviation > 0.2f || rotYDeviation > 0.2f || rotZDeviation > 0.2f)
+        {
+            allObjectsStable = false;
+            Debug.Log($"Object {i} failed rotation check: X={rotXDeviation:P1}, Y={rotYDeviation:P1}, Z={rotZDeviation:P1}");
+            break;
+        }
+    }
+    
+    if (allObjectsStable)
+    {
+        totalStars++;
+        Debug.Log($"★ {testName} passed! Total stars: {totalStars}/3");
+    }
+    else
+    {
+        Debug.Log($"✗ {testName} failed. Total stars: {totalStars}/3");
+    }
+}
+    
     private void StartMeteorAnimation()
     {
         // Показываем панель метеоритов
@@ -243,6 +312,8 @@ public class LevelController : MonoBehaviour
         
         // Выключаем все метеориты
         DestroyAllMeteors();
+        
+        CheckObjectsStability("Meteors Test");
         
         // Запускаем анимацию землетрясения
         StartEarthquakeAnimation();
@@ -323,6 +394,8 @@ public class LevelController : MonoBehaviour
         
         Debug.Log("Earthquake ended! Starting wind animation...");
         
+        CheckObjectsStability("Earthquake Test");
+        
         // Запускаем анимацию ветра
         StartWindAnimation();
     }
@@ -378,12 +451,27 @@ public class LevelController : MonoBehaviour
             {
                 WindManager.Instance.StartWind(1.5f, 3f);
                 Debug.Log("Wind started!");
+                StartCoroutine(WaitForWindToEnd());
             }
             else
             {
                 Debug.LogError("WindManager instance is missing!");
             }
         });
+    }
+    
+    private IEnumerator WaitForWindToEnd()
+    {
+        // Ждем 1.5 секунды (длительность ветра)
+        yield return new WaitForSeconds(1.5f);
+    
+        Debug.Log("Wind ended! Checking final stability...");
+    
+        // Проверяем стабильность после ветра
+        CheckObjectsStability("Wind Test");
+    
+        // Выводим финальный результат
+        Debug.Log($"🏆 FINAL RESULT: {totalStars}/3 stars earned!");
     }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)
