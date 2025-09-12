@@ -114,6 +114,9 @@ public class MeteorsSpawner : MonoBehaviour
             GameObject spawnedObject = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
             spawnedObjects.Add(spawnedObject);
             
+            // Добавляем обработчик столкновений
+            AddCollisionHandler(spawnedObject);
+            
             // Добавляем движение
             AddMovementToMeteor(spawnedObject);
             
@@ -177,6 +180,9 @@ public class MeteorsSpawner : MonoBehaviour
             GameObject spawnedObject = Instantiate(prefab, spawnPosition, Quaternion.identity);
             spawnedObjects.Add(spawnedObject);
             
+            // Добавляем обработчик столкновений
+            AddCollisionHandler(spawnedObject);
+            
             // Добавляем движение
             AddMovementToMeteor(spawnedObject);
             
@@ -191,6 +197,17 @@ public class MeteorsSpawner : MonoBehaviour
         
         Debug.Log($"Custom sequential spawn completed! Total objects: {count}");
         currentSpawnCoroutine = null;
+    }
+    
+    /// <summary>
+    /// Добавляет обработчик столкновений к метеориту
+    /// </summary>
+    private void AddCollisionHandler(GameObject meteor)
+    {
+        if (meteor.GetComponent<MeteorCollisionHandler>() == null)
+        {
+            meteor.AddComponent<MeteorCollisionHandler>();
+        }
     }
     
     /// <summary>

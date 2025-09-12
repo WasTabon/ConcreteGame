@@ -881,6 +881,10 @@ MonoBehaviour:
   _meteorsPanel: {fileID: 385073787}
   _meteorIcon: {fileID: 339896181}
   _meteorsBackground: {fileID: 635347535}
+  _earthquakePanel: {fileID: 1900906666}
+  _earthquakeIcon: {fileID: 104450551}
+  _earthquakeBackground: {fileID: 633492491}
+  _earthquakeManager: {fileID: 1068692313}
 --- !u!1 &249390682
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,7 +899,7 @@ GameObject:
   - component: {fileID: 249390686}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

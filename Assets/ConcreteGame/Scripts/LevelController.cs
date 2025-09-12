@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -26,12 +27,22 @@ public class LevelController : MonoBehaviour
     [SerializeField] private RectTransform _meteorIcon;
     [SerializeField] private RectTransform _meteorsBackground;
 
+    [Header("Earthquake Animation")]
+    [SerializeField] private RectTransform _earthquakePanel;
+    [SerializeField] private RectTransform _earthquakeIcon;
+    [SerializeField] private RectTransform _earthquakeBackground;
+
+    [Header("References")]
+    [SerializeField] private EarthquakeManager _earthquakeManager;
+
     private GameObject _currentObject;
     private GameObject _currentButton;
 
     // Запоминаем изначальные позиции для анимации
     private Vector3 _meteorIconInitialPos;
     private Vector3 _meteorsBackgroundInitialPos;
+    private Vector3 _earthquakeIconInitialPos;
+    private Vector3 _earthquakeBackgroundInitialPos;
 
     private void Awake()
     {
@@ -46,11 +57,12 @@ public class LevelController : MonoBehaviour
         // Запоминаем изначальные позиции элементов
         _meteorIconInitialPos = _meteorIcon.anchoredPosition;
         _meteorsBackgroundInitialPos = _meteorsBackground.anchoredPosition;
+        _earthquakeIconInitialPos = _earthquakeIcon.anchoredPosition;
+        _earthquakeBackgroundInitialPos = _earthquakeBackground.anchoredPosition;
         
         // Правильно скрываем элементы в начале
         InitializeMeteorElements();
-        
-        // зробити анімацію 
+        InitializeEarthquakeElements();
     }
 
     private void InitializeMeteorElements()
@@ -62,6 +74,17 @@ public class LevelController : MonoBehaviour
         // Прячем элементы за пределы экрана
         _meteorIcon.anchoredPosition = _meteorIconInitialPos + Vector3.right * 2000f; // Прячем справа
         _meteorsBackground.anchoredPosition = _meteorsBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
+    }
+
+    private void InitializeEarthquakeElements()
+    {
+        // Скрываем панель землетрясения в начале
+        _earthquakePanel.gameObject.SetActive(false);
+        _earthquakePanel.localScale = Vector3.zero;
+        
+        // Прячем элементы за пределы экрана
+        _earthquakeIcon.anchoredPosition = _earthquakeIconInitialPos + Vector3.right * 2000f; // Прячем справа
+        _earthquakeBackground.anchoredPosition = _earthquakeBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
     }
 
     public void DenyBuild()
@@ -179,6 +202,94 @@ public class LevelController : MonoBehaviour
         MeteorsSpawner.Instance.SpawnObjects();
         
         Debug.Log("Meteors spawned!");
+        
+        // Начинаем отслеживать падение метеоритов
+        StartCoroutine(WaitForMeteorsToFall());
+    }
+
+    private IEnumerator WaitForMeteorsToFall()
+    {
+        // Ждем пока все 5 метеоритов заспавнятся
+        while (MeteorsSpawner.Instance.IsSpawning() || MeteorsSpawner.Instance.GetSpawnedObjects().Count < 5)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        Debug.Log("All 5 meteors spawned! Starting 3-second timer...");
+        
+        // Ждем 3 секунды после спавна 5-го метеорита
+        yield return new WaitForSeconds(3f);
+        
+        // Выключаем все метеориты
+        DestroyAllMeteors();
+        
+        // Запускаем анимацию землетрясения
+        StartEarthquakeAnimation();
+    }
+
+    private void DestroyAllMeteors()
+    {
+        MeteorsSpawner.Instance.ClearPreviousObjects();
+        Debug.Log("All meteors destroyed!");
+    }
+
+    private void StartEarthquakeAnimation()
+    {
+        // Показываем панель землетрясения
+        _earthquakePanel.gameObject.SetActive(true);
+        
+        // Анимируем появление панели
+        _earthquakePanel.DOScale(Vector3.one, 0.3f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                // Создаем последовательность анимаций
+                Sequence earthquakeSequence = DOTween.Sequence();
+                
+                // 1. Анимация EarthquakeIcon - въезжает справа налево
+                earthquakeSequence.Append(_earthquakeIcon.DOAnchorPos(_earthquakeIconInitialPos, 0.6f)
+                    .SetEase(Ease.OutQuart));
+                
+                // 2. Анимация EarthquakeBackground - въезжает слева направо (с небольшой задержкой)
+                earthquakeSequence.Insert(0.2f, _earthquakeBackground.DOAnchorPos(_earthquakeBackgroundInitialPos, 0.6f)
+                    .SetEase(Ease.OutQuart));
+                
+                // 3. Пауза на позициях (0.5 секунды после завершения въезда)
+                earthquakeSequence.AppendInterval(0.5f);
+                
+                // 4. Прячем элементы обратно и запускаем землетрясение
+                earthquakeSequence.AppendCallback(() => HideEarthquakeElementsAndStartQuake());
+            });
+    }
+
+    private void HideEarthquakeElementsAndStartQuake()
+    {
+        Sequence hideSequence = DOTween.Sequence();
+        
+        // Прячем EarthquakeIcon вправо за пределы экрана (влетает вправо)
+        hideSequence.Append(_earthquakeIcon.DOAnchorPos(_earthquakeIconInitialPos + Vector3.right * 2000f, 0.4f)
+            .SetEase(Ease.InQuart));
+        
+        // Прячем EarthquakeBackground влево за пределы экрана (влетает влево) - параллельно
+        hideSequence.Join(_earthquakeBackground.DOAnchorPos(_earthquakeBackgroundInitialPos + Vector3.left * 2000f, 0.4f)
+            .SetEase(Ease.InQuart));
+        
+        // После того как элементы уехали за пределы экрана, отключаем панель и запускаем землетрясение
+        hideSequence.OnComplete(() =>
+        {
+            _earthquakePanel.gameObject.SetActive(false);
+            
+            // Запускаем землетрясение с указанными параметрами
+            if (_earthquakeManager != null)
+            {
+                _earthquakeManager.StartEarthquake(3f, 0.05f, 3f);
+                Debug.Log("Earthquake started!");
+            }
+            else
+            {
+                Debug.LogError("EarthquakeManager reference is missing!");
+            }
+        });
     }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)
