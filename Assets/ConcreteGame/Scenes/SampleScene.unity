@@ -884,6 +884,9 @@ MonoBehaviour:
   _earthquakePanel: {fileID: 1900906666}
   _earthquakeIcon: {fileID: 104450551}
   _earthquakeBackground: {fileID: 633492491}
+  _windPanel: {fileID: 556980816}
+  _windIcon: {fileID: 1051798785}
+  _windBackground: {fileID: 1500188349}
   _earthquakeManager: {fileID: 1068692313}
 --- !u!1 &222663922
 GameObject:
@@ -2295,7 +2298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &556980816
 RectTransform:
   m_ObjectHideFlags: 0

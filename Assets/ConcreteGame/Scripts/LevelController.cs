@@ -32,6 +32,11 @@ public class LevelController : MonoBehaviour
     [SerializeField] private RectTransform _earthquakeIcon;
     [SerializeField] private RectTransform _earthquakeBackground;
 
+    [Header("Wind Animation")]
+    [SerializeField] private RectTransform _windPanel;
+    [SerializeField] private RectTransform _windIcon;
+    [SerializeField] private RectTransform _windBackground;
+
     [Header("References")]
     [SerializeField] private EarthquakeManager _earthquakeManager;
 
@@ -43,6 +48,8 @@ public class LevelController : MonoBehaviour
     private Vector3 _meteorsBackgroundInitialPos;
     private Vector3 _earthquakeIconInitialPos;
     private Vector3 _earthquakeBackgroundInitialPos;
+    private Vector3 _windIconInitialPos;
+    private Vector3 _windBackgroundInitialPos;
 
     private void Awake()
     {
@@ -59,10 +66,13 @@ public class LevelController : MonoBehaviour
         _meteorsBackgroundInitialPos = _meteorsBackground.anchoredPosition;
         _earthquakeIconInitialPos = _earthquakeIcon.anchoredPosition;
         _earthquakeBackgroundInitialPos = _earthquakeBackground.anchoredPosition;
+        _windIconInitialPos = _windIcon.anchoredPosition;
+        _windBackgroundInitialPos = _windBackground.anchoredPosition;
         
         // Правильно скрываем элементы в начале
         InitializeMeteorElements();
         InitializeEarthquakeElements();
+        InitializeWindElements();
     }
 
     private void InitializeMeteorElements()
@@ -85,6 +95,17 @@ public class LevelController : MonoBehaviour
         // Прячем элементы за пределы экрана
         _earthquakeIcon.anchoredPosition = _earthquakeIconInitialPos + Vector3.right * 2000f; // Прячем справа
         _earthquakeBackground.anchoredPosition = _earthquakeBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
+    }
+
+    private void InitializeWindElements()
+    {
+        // Скрываем панель ветра в начале
+        _windPanel.gameObject.SetActive(false);
+        _windPanel.localScale = Vector3.zero;
+        
+        // Прячем элементы за пределы экрана
+        _windIcon.anchoredPosition = _windIconInitialPos + Vector3.right * 2000f; // Прячем справа
+        _windBackground.anchoredPosition = _windBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
     }
 
     public void DenyBuild()
@@ -284,10 +305,83 @@ public class LevelController : MonoBehaviour
             {
                 _earthquakeManager.StartEarthquake(3f, 0.05f, 3f);
                 Debug.Log("Earthquake started!");
+                
+                // Ждем окончания землетрясения и запускаем анимацию ветра
+                StartCoroutine(WaitForEarthquakeToEnd());
             }
             else
             {
                 Debug.LogError("EarthquakeManager reference is missing!");
+            }
+        });
+    }
+
+    private IEnumerator WaitForEarthquakeToEnd()
+    {
+        // Ждем 3 секунды (длительность землетрясения)
+        yield return new WaitForSeconds(3f);
+        
+        Debug.Log("Earthquake ended! Starting wind animation...");
+        
+        // Запускаем анимацию ветра
+        StartWindAnimation();
+    }
+
+    private void StartWindAnimation()
+    {
+        // Показываем панель ветра
+        _windPanel.gameObject.SetActive(true);
+        
+        // Анимируем появление панели
+        _windPanel.DOScale(Vector3.one, 0.3f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                // Создаем последовательность анимаций
+                Sequence windSequence = DOTween.Sequence();
+                
+                // 1. Анимация WindIcon - въезжает справа налево
+                windSequence.Append(_windIcon.DOAnchorPos(_windIconInitialPos, 0.6f)
+                    .SetEase(Ease.OutQuart));
+                
+                // 2. Анимация WindBackground - въезжает слева направо (с небольшой задержкой)
+                windSequence.Insert(0.2f, _windBackground.DOAnchorPos(_windBackgroundInitialPos, 0.6f)
+                    .SetEase(Ease.OutQuart));
+                
+                // 3. Пауза на позициях (0.5 секунды после завершения въезда)
+                windSequence.AppendInterval(0.5f);
+                
+                // 4. Прячем элементы обратно и запускаем ветер
+                windSequence.AppendCallback(() => HideWindElementsAndStartWind());
+            });
+    }
+
+    private void HideWindElementsAndStartWind()
+    {
+        Sequence hideSequence = DOTween.Sequence();
+        
+        // Прячем WindIcon вправо за пределы экрана (влетает вправо)
+        hideSequence.Append(_windIcon.DOAnchorPos(_windIconInitialPos + Vector3.right * 2000f, 0.4f)
+            .SetEase(Ease.InQuart));
+        
+        // Прячем WindBackground влево за пределы экрана (влетает влево) - параллельно
+        hideSequence.Join(_windBackground.DOAnchorPos(_windBackgroundInitialPos + Vector3.left * 2000f, 0.4f)
+            .SetEase(Ease.InQuart));
+        
+        // После того как элементы уехали за пределы экрана, отключаем панель и запускаем ветер
+        hideSequence.OnComplete(() =>
+        {
+            _windPanel.gameObject.SetActive(false);
+            
+            // Запускаем ветер с указанными параметрами (1 секунда, сила 1)
+            if (WindManager.Instance != null)
+            {
+                WindManager.Instance.StartWind(1.5f, 3f);
+                Debug.Log("Wind started!");
+            }
+            else
+            {
+                Debug.LogError("WindManager instance is missing!");
             }
         });
     }
