@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +9,8 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
 
+    [SerializeField] private RectTransform _buildingsContent;
+    
     [SerializeField] private RectTransform _menuButton;
     [SerializeField] private RectTransform _panel1;
     [SerializeField] private RectTransform _panel2;
@@ -64,6 +65,8 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     {
+        _neededBuldings = _buildingsContent.transform.childCount;
+        
         _startGameButton.DOScale(Vector3.zero, 0f);
         _buildingsCountText.text = $"0/{_neededBuldings}";
         
