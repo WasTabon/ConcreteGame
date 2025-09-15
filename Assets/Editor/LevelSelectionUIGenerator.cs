@@ -171,13 +171,15 @@ public class LevelSelectionUIGenerator : EditorWindow
         RectTransform levelTextRect = levelNumberGO.GetComponent<RectTransform>();
         levelTextRect.anchorMin = new Vector2(0.5f, 0.6f);
         levelTextRect.anchorMax = new Vector2(0.5f, 0.6f);
+        levelTextRect.anchoredPosition = Vector2.zero;
         levelTextRect.sizeDelta = new Vector2(100, 60);
 
         GameObject starsContainerGO = new GameObject("StarsContainer");
         starsContainerGO.transform.SetParent(buttonGO.transform, false);
-        RectTransform starsRect = starsContainerGO.GetComponent<RectTransform>();
+        RectTransform starsRect = starsContainerGO.AddComponent<RectTransform>();
         starsRect.anchorMin = new Vector2(0.5f, 0.2f);
         starsRect.anchorMax = new Vector2(0.5f, 0.2f);
+        starsRect.anchoredPosition = Vector2.zero;
         starsRect.sizeDelta = new Vector2(200, 40);
         
         HorizontalLayoutGroup starsLayout = starsContainerGO.AddComponent<HorizontalLayoutGroup>();
@@ -188,33 +190,48 @@ public class LevelSelectionUIGenerator : EditorWindow
         starsLayout.childForceExpandWidth = false;
         starsLayout.childForceExpandHeight = false;
 
+        Image[] starBlacks = new Image[3];
+        Image[] starWhites = new Image[3];
+        
         for (int i = 0; i < 3; i++)
         {
-            GameObject starGO = new GameObject($"Star_{i + 1}");
-            starGO.transform.SetParent(starsContainerGO.transform, false);
-            Image starImage = starGO.AddComponent<Image>();
-            starImage.color = new Color(0.3f, 0.3f, 0.3f);
-            RectTransform starRect = starGO.GetComponent<RectTransform>();
-            starRect.sizeDelta = new Vector2(35, 35);
+            GameObject starBlackGO = new GameObject($"StarBlack_{i + 1}");
+            starBlackGO.transform.SetParent(starsContainerGO.transform, false);
+            Image starBlackImage = starBlackGO.AddComponent<Image>();
+            starBlackImage.color = Color.black;
+            RectTransform starBlackRect = starBlackGO.GetComponent<RectTransform>();
+            starBlackRect.sizeDelta = new Vector2(35, 35);
+            starBlacks[i] = starBlackImage;
+            
+            GameObject starWhiteGO = new GameObject($"StarWhite");
+            starWhiteGO.transform.SetParent(starBlackGO.transform, false);
+            Image starWhiteImage = starWhiteGO.AddComponent<Image>();
+            starWhiteImage.color = Color.white;
+            RectTransform starWhiteRect = starWhiteGO.GetComponent<RectTransform>();
+            starWhiteRect.anchorMin = Vector2.zero;
+            starWhiteRect.anchorMax = Vector2.one;
+            starWhiteRect.sizeDelta = Vector2.zero;
+            starWhiteRect.anchoredPosition = Vector2.zero;
+            starWhiteRect.localScale = Vector3.zero;
+            starWhites[i] = starWhiteImage;
         }
 
-        GameObject lockIconGO = new GameObject("LockIcon");
-        lockIconGO.transform.SetParent(buttonGO.transform, false);
-        TextMeshProUGUI lockText = lockIconGO.AddComponent<TextMeshProUGUI>();
-        lockText.text = "🔒";
-        lockText.fontSize = 64;
-        lockText.alignment = TextAlignmentOptions.Center;
-        lockText.color = new Color(1, 1, 1, 0.8f);
-        RectTransform lockRect = lockIconGO.GetComponent<RectTransform>();
-        lockRect.anchorMin = new Vector2(0.5f, 0.5f);
-        lockRect.anchorMax = new Vector2(0.5f, 0.5f);
-        lockRect.sizeDelta = new Vector2(100, 100);
+        GameObject lockOverlayGO = new GameObject("LockOverlay");
+        lockOverlayGO.transform.SetParent(buttonGO.transform, false);
+        Image lockOverlayImage = lockOverlayGO.AddComponent<Image>();
+        lockOverlayImage.color = new Color(0, 0, 0, 0.7f);
+        RectTransform lockRect = lockOverlayGO.GetComponent<RectTransform>();
+        lockRect.anchorMin = Vector2.zero;
+        lockRect.anchorMax = Vector2.one;
+        lockRect.sizeDelta = Vector2.zero;
+        lockRect.anchoredPosition = Vector2.zero;
         
-        lockIconGO.SetActive(levelNumber > 1);
+        lockOverlayGO.SetActive(levelNumber > 1);
 
         LevelButtonData buttonData = buttonGO.AddComponent<LevelButtonData>();
         buttonData.levelNumber = levelNumber;
-        buttonData.lockIcon = lockIconGO;
-        buttonData.stars = starsContainerGO.GetComponentsInChildren<Image>();
+        buttonData.lockOverlay = lockOverlayGO;
+        buttonData.starBlacks = starBlacks;
+        buttonData.starWhites = starWhites;
     }
 }

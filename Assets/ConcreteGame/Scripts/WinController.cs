@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class WinController : MonoBehaviour
 {
@@ -30,21 +31,40 @@ public class WinController : MonoBehaviour
     [SerializeField] private AudioClip starFillSound;
     [SerializeField] private AudioClip buttonActivateSound;
 
+    [Header("Level Settings")]
+    [SerializeField] private int currentLevelNumber = 1;
+
     private Vector2 _originalBackgroundPos;
     private Vector2 _originalTextScale;
     private Vector2 _originalButtonScale;
     private Color _originalButtonColor;
     private Image _continueButtonImage;
+    private int _earnedStars = 0;
 
     private void Awake()
     {
         Instance = this;
         _continueButtonImage = _continueButton.GetComponent<Image>();
+        
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName.StartsWith("Level "))
+        {
+            string levelNumberStr = sceneName.Replace("Level ", "");
+            if (int.TryParse(levelNumberStr, out int levelNum))
+            {
+                currentLevelNumber = levelNum;
+            }
+        }
     }
 
     private void Start()
     {
         SetupScene();
+        
+        if (_continueButton != null)
+        {
+            _continueButton.onClick.AddListener(OnContinueButtonClick);
+        }
     }
 
     private void PlaySound(AudioClip clip)
@@ -81,6 +101,9 @@ public class WinController : MonoBehaviour
     public void ShowWinAnimation(int starCount)
     {
         starCount = Mathf.Clamp(starCount, 0, 3);
+        _earnedStars = starCount;
+        
+        SaveLevelProgress(starCount);
         
         _winPanel.gameObject.SetActive(true);
         
@@ -131,9 +154,55 @@ public class WinController : MonoBehaviour
         });
     }
 
+    private void SaveLevelProgress(int starCount)
+    {
+        if (currentLevelNumber <= 5)
+        {
+            LevelSelectionController.SaveLevelStars(currentLevelNumber, starCount);
+            
+            LevelSelectionController.UnlockNextLevel(currentLevelNumber);
+        }
+    }
+
+    private void OnContinueButtonClick()
+    {
+        int nextLevel = currentLevelNumber + 1;
+        
+        if (currentLevelNumber >= 5)
+        {
+            SceneManager.LoadScene("Levels");
+        }
+        else if (nextLevel <= 30)
+        {
+            if (nextLevel <= 5)
+            {
+                SceneManager.LoadScene($"Level {nextLevel}");
+            }
+            else
+            {
+                int randomLevel = Random.Range(1, 6);
+                SceneManager.LoadScene($"Level {randomLevel}");
+            }
+        }
+        else
+        {
+            SceneManager.LoadScene("Levels");
+        }
+    }
+
     public void HideWinPanel()
     {
         _winPanel.gameObject.SetActive(false);
         SetupScene();
+    }
+    
+    public void LoadLevelSelection()
+    {
+        SceneManager.LoadScene("Levels");
+    }
+    
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
