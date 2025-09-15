@@ -9,6 +9,10 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
 
+    public GameObject allPanel;
+    public GameObject surePanel;
+    public GameObject buyPanel;
+    
     public GameObject removeBuildingPanel;
     public bool isRemove = false;
     
@@ -93,8 +97,23 @@ public class LevelController : MonoBehaviour
             isRemove = true;
         else
             isRemove = false;
+        
+        PlayerPrefs.SetInt("isRemove", 0);
     }
 
+    public void OpenBuyPanel()
+    {
+        if (isRemove)
+        {
+            surePanel.SetActive(false);
+            allPanel.SetActive(false);
+        }
+        else
+        {
+            buyPanel.SetActive(true);
+        }
+    }
+    
     private void InitializeMeteorElements()
     {
         _meteorsPanel.gameObject.SetActive(false);
@@ -483,6 +502,13 @@ private void CheckObjectsStability(string testName)
         {
             isRemove = false;
             button.SetActive(false);
+            removeBuildingPanel.SetActive(true);
+            _neededBuldings--;
+            _buildingsCountText.text = $"{_buildingsCount}/{_neededBuldings}";
+            if (_buildingsCount >= _neededBuldings)
+            {
+                ShowStartGameButton();
+            }
             return;
         }
         
