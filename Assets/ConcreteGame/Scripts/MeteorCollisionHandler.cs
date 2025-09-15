@@ -6,10 +6,14 @@ public class MeteorCollisionHandler : MonoBehaviour
     [Header("Screen Shake Settings")]
     [SerializeField] private float shakeDuration = 0.3f;
     [SerializeField] private float shakeStrength = 0.2f;
+    [SerializeField] private float soundCooldown = 0.1f;
 
+    public AudioClip sound;
+    
     private Camera mainCamera;
     private Vector3 originalCameraPosition;
     private bool hasCollided = false;
+    private float lastSoundTime = 0f;
 
     private void Start()
     {
@@ -24,20 +28,16 @@ public class MeteorCollisionHandler : MonoBehaviour
     {
         if (hasCollided) return;
 
-        // Проверяем столкновение с объектом с тегом "Player"
         if (collision.gameObject.CompareTag("Player"))
         {
             TriggerCameraShake();
-            //hasCollided = true;
             return;
         }
 
-        // Проверяем столкновение с объектом с компонентом GridMovement
         GridMovement gridMovement = collision.gameObject.GetComponent<GridMovement>();
         if (gridMovement != null)
         {
             TriggerCameraShake();
-            //hasCollided = true;
         }
     }
 
@@ -47,10 +47,14 @@ public class MeteorCollisionHandler : MonoBehaviour
         {
             Debug.Log("Meteor hit! Triggering camera shake...");
             
-            // Останавливаем предыдущие анимации камеры
+            if (Time.time >= lastSoundTime + soundCooldown)
+            {
+                MusicController.Instance.PlaySpecificSound(sound);
+                lastSoundTime = Time.time;
+            }
+            
             mainCamera.transform.DOKill();
             
-            // Применяем тряску камеры
             mainCamera.transform.DOShakePosition(
                 duration: shakeDuration,
                 strength: shakeStrength,
@@ -59,7 +63,6 @@ public class MeteorCollisionHandler : MonoBehaviour
                 snapping: false,
                 fadeOut: true
             ).OnComplete(() => {
-                // Возвращаем камеру в исходную позицию
                 mainCamera.transform.position = originalCameraPosition;
             });
         }

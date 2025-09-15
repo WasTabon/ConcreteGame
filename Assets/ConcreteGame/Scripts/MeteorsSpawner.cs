@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MeteorsSpawner : MonoBehaviour
 {
+    [SerializeField] private AudioClip sound;
+    
     [Header("Spawn Settings")]
     [SerializeField] private GameObject prefabToSpawn; // Префаб для спавна
     [SerializeField] private float fixedY = 0f; // Фиксированная Y позиция
@@ -206,7 +208,8 @@ public class MeteorsSpawner : MonoBehaviour
     {
         if (meteor.GetComponent<MeteorCollisionHandler>() == null)
         {
-            meteor.AddComponent<MeteorCollisionHandler>();
+            MeteorCollisionHandler meteorCollisionHandler = meteor.AddComponent<MeteorCollisionHandler>();
+            meteorCollisionHandler.sound = sound;
         }
     }
     
