@@ -52,7 +52,6 @@ public class LevelController : MonoBehaviour
     private GameObject _currentObject;
     private GameObject _currentButton;
 
-    // Запоминаем изначальные позиции для анимации
     private Vector3 _meteorIconInitialPos;
     private Vector3 _meteorsBackgroundInitialPos;
     private Vector3 _earthquakeIconInitialPos;
@@ -72,7 +71,6 @@ public class LevelController : MonoBehaviour
         _startGameButton.DOScale(Vector3.zero, 0f);
         _buildingsCountText.text = $"0/{_neededBuldings}";
         
-        // Запоминаем изначальные позиции элементов
         _meteorIconInitialPos = _meteorIcon.anchoredPosition;
         _meteorsBackgroundInitialPos = _meteorsBackground.anchoredPosition;
         _earthquakeIconInitialPos = _earthquakeIcon.anchoredPosition;
@@ -80,7 +78,6 @@ public class LevelController : MonoBehaviour
         _windIconInitialPos = _windIcon.anchoredPosition;
         _windBackgroundInitialPos = _windBackground.anchoredPosition;
         
-        // Правильно скрываем элементы в начале
         InitializeMeteorElements();
         InitializeEarthquakeElements();
         InitializeWindElements();
@@ -88,35 +85,29 @@ public class LevelController : MonoBehaviour
 
     private void InitializeMeteorElements()
     {
-        // Скрываем панель метеоритов в начале
         _meteorsPanel.gameObject.SetActive(false);
         _meteorsPanel.localScale = Vector3.zero;
         
-        // Прячем элементы за пределы экрана
-        _meteorIcon.anchoredPosition = _meteorIconInitialPos + Vector3.right * 2000f; // Прячем справа
-        _meteorsBackground.anchoredPosition = _meteorsBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
+        _meteorIcon.anchoredPosition = _meteorIconInitialPos + Vector3.right * 2000f;
+        _meteorsBackground.anchoredPosition = _meteorsBackgroundInitialPos + Vector3.left * 2000f;
     }
 
     private void InitializeEarthquakeElements()
     {
-        // Скрываем панель землетрясения в начале
         _earthquakePanel.gameObject.SetActive(false);
         _earthquakePanel.localScale = Vector3.zero;
         
-        // Прячем элементы за пределы экрана
-        _earthquakeIcon.anchoredPosition = _earthquakeIconInitialPos + Vector3.right * 2000f; // Прячем справа
-        _earthquakeBackground.anchoredPosition = _earthquakeBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
+        _earthquakeIcon.anchoredPosition = _earthquakeIconInitialPos + Vector3.right * 2000f;
+        _earthquakeBackground.anchoredPosition = _earthquakeBackgroundInitialPos + Vector3.left * 2000f;
     }
 
     private void InitializeWindElements()
     {
-        // Скрываем панель ветра в начале
         _windPanel.gameObject.SetActive(false);
         _windPanel.localScale = Vector3.zero;
         
-        // Прячем элементы за пределы экрана
-        _windIcon.anchoredPosition = _windIconInitialPos + Vector3.right * 2000f; // Прячем справа
-        _windBackground.anchoredPosition = _windBackgroundInitialPos + Vector3.left * 2000f; // Прячем слева
+        _windIcon.anchoredPosition = _windIconInitialPos + Vector3.right * 2000f;
+        _windBackground.anchoredPosition = _windBackgroundInitialPos + Vector3.left * 2000f;
     }
 
     public void DenyBuild()
@@ -173,7 +164,6 @@ public class LevelController : MonoBehaviour
                     SaveInitialTransforms(gridMovements);
                 }
                 
-                // Запускаем анимацию метеоритов
                 StartMeteorAnimation();
             }));
     }
@@ -207,7 +197,6 @@ private void CheckObjectsStability(string testName)
         Vector3 initialPos = initialPositions[i];
         Vector3 initialRot = initialRotations[i];
         
-        // Проверяем отклонение по Y позиции (20%)
         float posYDeviation = Mathf.Abs(currentPos.y - initialPos.y) / Mathf.Abs(initialPos.y);
         if (posYDeviation > 0.2f)
         {
@@ -216,7 +205,6 @@ private void CheckObjectsStability(string testName)
             break;
         }
         
-        // Проверяем отклонение ротации по всем осям (20%)
         float rotXDeviation = Mathf.Abs(Mathf.DeltaAngle(currentRot.x, initialRot.x)) / 360f;
         float rotYDeviation = Mathf.Abs(Mathf.DeltaAngle(currentRot.y, initialRot.y)) / 360f;
         float rotZDeviation = Mathf.Abs(Mathf.DeltaAngle(currentRot.z, initialRot.z)) / 360f;
@@ -242,29 +230,28 @@ private void CheckObjectsStability(string testName)
     
     private void StartMeteorAnimation()
     {
-        // Показываем панель метеоритов
         _meteorsPanel.gameObject.SetActive(true);
         
-        // Анимируем появление панели
         _meteorsPanel.DOScale(Vector3.one, 0.3f)
             .SetEase(Ease.OutBack)
             .OnComplete(() =>
             {
-                // Создаем последовательность анимаций
                 Sequence meteorSequence = DOTween.Sequence();
                 
-                // 1. Анимация MeteorIcon - въезжает справа налево
                 meteorSequence.Append(_meteorIcon.DOAnchorPos(_meteorIconInitialPos, 0.6f)
-                    .SetEase(Ease.OutQuart));
+                    .SetEase(Ease.OutQuart)
+                    .OnStart(() => {
+                        if (sound != null && MusicController.Instance != null)
+                        {
+                            MusicController.Instance.PlaySpecificSound(sound);
+                        }
+                    }));
                 
-                // 2. Анимация MeteorsBackground - въезжает слева направо (с небольшой задержкой)
                 meteorSequence.Insert(0.2f, _meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos, 0.6f)
                     .SetEase(Ease.OutQuart));
                 
-                // 3. Пауза на позициях (0.5 секунды после завершения въезда)
                 meteorSequence.AppendInterval(0.5f);
                 
-                // 4. Прячем элементы обратно
                 meteorSequence.AppendCallback(() => HideMeteorElements());
             });
     }
@@ -273,38 +260,31 @@ private void CheckObjectsStability(string testName)
     {
         Sequence hideSequence = DOTween.Sequence();
         
-        // Прячем MeteorIcon вправо за пределы экрана (влетает вправо)
         hideSequence.Append(_meteorIcon.DOAnchorPos(_meteorIconInitialPos + Vector3.right * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // Прячем MeteorsBackground влево за пределы экрана (влетает влево) - параллельно
         hideSequence.Join(_meteorsBackground.DOAnchorPos(_meteorsBackgroundInitialPos + Vector3.left * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // После того как элементы уехали за пределы экрана, просто отключаем панель
         hideSequence.OnComplete(() =>
         {
             _meteorsPanel.gameObject.SetActive(false);
             
-            // Настраиваем ObjectSpawner и вызываем спавн метеоритов
             SpawnMeteors();
         });
     }
 
     private void SpawnMeteors()
     {
-        // Просто вызываем спавн с настройками из MeteorsSpawner
         MeteorsSpawner.Instance.SpawnObjects();
         
         Debug.Log("Meteors spawned!");
         
-        // Начинаем отслеживать падение метеоритов
         StartCoroutine(WaitForMeteorsToFall());
     }
 
     private IEnumerator WaitForMeteorsToFall()
     {
-        // Ждем пока все 5 метеоритов заспавнятся
         while (MeteorsSpawner.Instance.IsSpawning() || MeteorsSpawner.Instance.GetSpawnedObjects().Count < 5)
         {
             yield return new WaitForSeconds(0.1f);
@@ -312,15 +292,12 @@ private void CheckObjectsStability(string testName)
         
         Debug.Log("All 5 meteors spawned! Starting 3-second timer...");
         
-        // Ждем 3 секунды после спавна 5-го метеорита
         yield return new WaitForSeconds(3f);
         
-        // Выключаем все метеориты
         DestroyAllMeteors();
         
         CheckObjectsStability("Meteors Test");
         
-        // Запускаем анимацию землетрясения
         StartEarthquakeAnimation();
     }
 
@@ -332,29 +309,28 @@ private void CheckObjectsStability(string testName)
 
     private void StartEarthquakeAnimation()
     {
-        // Показываем панель землетрясения
         _earthquakePanel.gameObject.SetActive(true);
         
-        // Анимируем появление панели
         _earthquakePanel.DOScale(Vector3.one, 0.3f)
             .SetEase(Ease.OutBack)
             .OnComplete(() =>
             {
-                // Создаем последовательность анимаций
                 Sequence earthquakeSequence = DOTween.Sequence();
                 
-                // 1. Анимация EarthquakeIcon - въезжает справа налево
                 earthquakeSequence.Append(_earthquakeIcon.DOAnchorPos(_earthquakeIconInitialPos, 0.6f)
-                    .SetEase(Ease.OutQuart));
+                    .SetEase(Ease.OutQuart)
+                    .OnStart(() => {
+                        if (sound != null && MusicController.Instance != null)
+                        {
+                            MusicController.Instance.PlaySpecificSound(sound);
+                        }
+                    }));
                 
-                // 2. Анимация EarthquakeBackground - въезжает слева направо (с небольшой задержкой)
                 earthquakeSequence.Insert(0.2f, _earthquakeBackground.DOAnchorPos(_earthquakeBackgroundInitialPos, 0.6f)
                     .SetEase(Ease.OutQuart));
                 
-                // 3. Пауза на позициях (0.5 секунды после завершения въезда)
                 earthquakeSequence.AppendInterval(0.5f);
                 
-                // 4. Прячем элементы обратно и запускаем землетрясение
                 earthquakeSequence.AppendCallback(() => HideEarthquakeElementsAndStartQuake());
             });
     }
@@ -363,26 +339,21 @@ private void CheckObjectsStability(string testName)
     {
         Sequence hideSequence = DOTween.Sequence();
         
-        // Прячем EarthquakeIcon вправо за пределы экрана (влетает вправо)
         hideSequence.Append(_earthquakeIcon.DOAnchorPos(_earthquakeIconInitialPos + Vector3.right * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // Прячем EarthquakeBackground влево за пределы экрана (влетает влево) - параллельно
         hideSequence.Join(_earthquakeBackground.DOAnchorPos(_earthquakeBackgroundInitialPos + Vector3.left * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // После того как элементы уехали за пределы экрана, отключаем панель и запускаем землетрясение
         hideSequence.OnComplete(() =>
         {
             _earthquakePanel.gameObject.SetActive(false);
             
-            // Запускаем землетрясение с указанными параметрами
             if (_earthquakeManager != null)
             {
                 _earthquakeManager.StartEarthquake(3f, 0.05f, 3f);
                 Debug.Log("Earthquake started!");
                 
-                // Ждем окончания землетрясения и запускаем анимацию ветра
                 StartCoroutine(WaitForEarthquakeToEnd());
             }
             else
@@ -394,42 +365,39 @@ private void CheckObjectsStability(string testName)
 
     private IEnumerator WaitForEarthquakeToEnd()
     {
-        // Ждем 3 секунды (длительность землетрясения)
         yield return new WaitForSeconds(3f);
         
         Debug.Log("Earthquake ended! Starting wind animation...");
         
         CheckObjectsStability("Earthquake Test");
         
-        // Запускаем анимацию ветра
         StartWindAnimation();
     }
 
     private void StartWindAnimation()
     {
-        // Показываем панель ветра
         _windPanel.gameObject.SetActive(true);
         
-        // Анимируем появление панели
         _windPanel.DOScale(Vector3.one, 0.3f)
             .SetEase(Ease.OutBack)
             .OnComplete(() =>
             {
-                // Создаем последовательность анимаций
                 Sequence windSequence = DOTween.Sequence();
                 
-                // 1. Анимация WindIcon - въезжает справа налево
                 windSequence.Append(_windIcon.DOAnchorPos(_windIconInitialPos, 0.6f)
-                    .SetEase(Ease.OutQuart));
+                    .SetEase(Ease.OutQuart)
+                    .OnStart(() => {
+                        if (sound != null && MusicController.Instance != null)
+                        {
+                            MusicController.Instance.PlaySpecificSound(sound);
+                        }
+                    }));
                 
-                // 2. Анимация WindBackground - въезжает слева направо (с небольшой задержкой)
                 windSequence.Insert(0.2f, _windBackground.DOAnchorPos(_windBackgroundInitialPos, 0.6f)
                     .SetEase(Ease.OutQuart));
                 
-                // 3. Пауза на позициях (0.5 секунды после завершения въезда)
                 windSequence.AppendInterval(0.5f);
                 
-                // 4. Прячем элементы обратно и запускаем ветер
                 windSequence.AppendCallback(() => HideWindElementsAndStartWind());
             });
     }
@@ -438,20 +406,16 @@ private void CheckObjectsStability(string testName)
     {
         Sequence hideSequence = DOTween.Sequence();
         
-        // Прячем WindIcon вправо за пределы экрана (влетает вправо)
         hideSequence.Append(_windIcon.DOAnchorPos(_windIconInitialPos + Vector3.right * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // Прячем WindBackground влево за пределы экрана (влетает влево) - параллельно
         hideSequence.Join(_windBackground.DOAnchorPos(_windBackgroundInitialPos + Vector3.left * 2000f, 0.4f)
             .SetEase(Ease.InQuart));
         
-        // После того как элементы уехали за пределы экрана, отключаем панель и запускаем ветер
         hideSequence.OnComplete(() =>
         {
             _windPanel.gameObject.SetActive(false);
             
-            // Запускаем ветер с указанными параметрами (1 секунда, сила 1)
             if (WindManager.Instance != null)
             {
                 WindManager.Instance.StartWind(2f, 3f);
@@ -467,15 +431,12 @@ private void CheckObjectsStability(string testName)
     
     private IEnumerator WaitForWindToEnd()
     {
-        // Ждем 1.5 секунды (длительность ветра)
         yield return new WaitForSeconds(1.5f);
     
         Debug.Log("Wind ended! Checking final stability...");
     
-        // Проверяем стабильность после ветра
         CheckObjectsStability("Wind Test");
     
-        // Выводим финальный результат
         Debug.Log($"🏆 FINAL RESULT: {totalStars}/3 stars earned!");
         
         WinController.Instance.ShowWinAnimation(totalStars);
@@ -510,7 +471,6 @@ private void CheckObjectsStability(string testName)
         else
         {
             Debug.Log("Не удалось найти свободное место для спавна!");
-            // Можно добавить уведомление для игрока о том, что нет места
         }
     }
 
@@ -518,38 +478,31 @@ private void CheckObjectsStability(string testName)
     {
         float gSize = grid.GridSize;
 
-        // Получаем границы сетки
         Vector3 gridMin = grid.GetBottomLeft();
         Vector3 gridMax = grid.GetTopRight();
 
-        // Определяем размер объекта
         Vector2 objectSize = GetPrefabSize(prefab);
 
         List<Vector2> allCells = new List<Vector2>();
 
-        // Рассчитываем допустимые границы для центра объекта с учетом его размера
         float minX = gridMin.x + objectSize.x / 2f;
         float maxX = gridMax.x - objectSize.x / 2f;
         float minY = gridMin.y + objectSize.y / 2f;
         float maxY = gridMax.y - objectSize.y / 2f;
 
-        // Проверяем, что объект вообще может поместиться в сетку
         if (minX > maxX || minY > maxY)
         {
             Debug.LogWarning($"Объект слишком большой для сетки! Размер объекта: {objectSize}, размер сетки: {gridMax - gridMin}");
             return Vector2.zero;
         }
 
-        // Собираем все возможные позиции на сетке с учетом размера объекта
         for (float x = minX; x <= maxX; x += gSize)
         {
             for (float y = minY; y <= maxY; y += gSize)
             {
-                // Привязываем к сетке
                 float alignedX = Mathf.Round(x / gSize) * gSize;
                 float alignedY = Mathf.Round(y / gSize) * gSize;
                 
-                // Проверяем, что выровненная позиция все еще в допустимых границах
                 if (alignedX >= minX && alignedX <= maxX && 
                     alignedY >= minY && alignedY <= maxY)
                 {
@@ -559,7 +512,6 @@ private void CheckObjectsStability(string testName)
             }
         }
 
-        // Перемешиваем список для случайного порядка проверки
         for (int i = 0; i < allCells.Count; i++)
         {
             Vector2 temp = allCells[i];
@@ -568,7 +520,6 @@ private void CheckObjectsStability(string testName)
             allCells[randomIndex] = temp;
         }
 
-        // Проверяем каждую позицию на свободность
         foreach (Vector2 cellCenter in allCells)
         {
             if (IsPositionFree(cellCenter, objectSize))
@@ -577,7 +528,6 @@ private void CheckObjectsStability(string testName)
             }
         }
 
-        // Если не нашли свободных клеток, возвращаем нулевой вектор
         return Vector2.zero;
     }
 
@@ -585,10 +535,8 @@ private void CheckObjectsStability(string testName)
     {
         Vector2 size = Vector2.one;
 
-        // Создаем временный объект для точного измерения
         GameObject tempObj = Instantiate(prefab);
     
-        // Пробуем получить размер из коллайдера
         Collider2D prefabCollider = tempObj.GetComponent<Collider2D>();
         if (prefabCollider != null)
         {
@@ -596,7 +544,6 @@ private void CheckObjectsStability(string testName)
         }
         else
         {
-            // Если коллайдера нет, пробуем SpriteRenderer
             SpriteRenderer prefabSprite = tempObj.GetComponent<SpriteRenderer>();
             if (prefabSprite != null && prefabSprite.sprite != null)
             {
@@ -608,7 +555,6 @@ private void CheckObjectsStability(string testName)
             }
         }
     
-        // Удаляем временный объект
         DestroyImmediate(tempObj);
     
         return size;
@@ -616,7 +562,6 @@ private void CheckObjectsStability(string testName)
 
     private bool IsPositionFree(Vector2 centerPosition, Vector2 objectSize)
     {
-        // Проверяем, что весь объект помещается в границы сетки
         Vector2 halfSize = objectSize / 2f;
         Vector3 gridMin = grid.GetBottomLeft();
         Vector3 gridMax = grid.GetTopRight();
@@ -626,7 +571,6 @@ private void CheckObjectsStability(string testName)
         float bottomEdge = centerPosition.y - halfSize.y;
         float topEdge = centerPosition.y + halfSize.y;
 
-        // Проверяем границы сетки
         float epsilon = 0.01f;
         if (leftEdge < gridMin.x + epsilon || 
             rightEdge > gridMax.x - epsilon || 
@@ -636,7 +580,6 @@ private void CheckObjectsStability(string testName)
             return false;
         }
 
-        // ВАЖНО: используем полный размер объекта, а не уменьшенный
         Vector2 checkSize = objectSize;
     
         Collider2D[] overlapping = Physics2D.OverlapBoxAll(centerPosition, checkSize, 0f);
@@ -652,19 +595,16 @@ private void CheckObjectsStability(string testName)
         return true;
     }
 
-    // Дополнительный метод для принудительного поиска места (если нужно)
     public Vector2 FindNearestFreePosition(Vector2 preferredPosition, GameObject prefab)
     {
         float gSize = grid.GridSize;
         Vector2 objectSize = GetPrefabSize(prefab);
 
-        // Сначала проверяем предпочитаемую позицию
         if (IsPositionFree(preferredPosition, objectSize))
         {
             return preferredPosition;
         }
 
-        // Спиральный поиск вокруг предпочитаемой позиции
         Vector3 gridMin = grid.GetBottomLeft();
         Vector3 gridMax = grid.GetTopRight();
         
@@ -679,7 +619,6 @@ private void CheckObjectsStability(string testName)
             {
                 for (int y = -radius; y <= radius; y++)
                 {
-                    // Проверяем только клетки на границе текущего радиуса
                     if (Mathf.Abs(x) == radius || Mathf.Abs(y) == radius)
                     {
                         Vector2 testPosition = preferredPosition + new Vector2(x * gSize, y * gSize);
@@ -693,6 +632,6 @@ private void CheckObjectsStability(string testName)
             }
         }
 
-        return Vector2.zero; // Не найдено свободного места
+        return Vector2.zero;
     }
 }
