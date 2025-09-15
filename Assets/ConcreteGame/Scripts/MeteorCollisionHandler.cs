@@ -28,6 +28,8 @@ public class MeteorCollisionHandler : MonoBehaviour
     {
         if (hasCollided) return;
 
+        gameObject.GetComponentInChildren<ParticleSystem>().gameObject.SetActive(false);
+        
         if (collision.gameObject.CompareTag("Player"))
         {
             TriggerCameraShake();
