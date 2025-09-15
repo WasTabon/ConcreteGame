@@ -17,6 +17,10 @@ public class BuyController : MonoBehaviour
         {
             Debug.Log("Complete");
 
+            LevelController.Instance.isRemove = true;
+            PlayerPrefs.SetInt("isRemove", 1);
+            PlayerPrefs.Save();
+            
             MusicController.Instance.PlaySpecificSound(buySound);
             loadingButton.SetActive(false);
             panel.SetActive(true);

@@ -9,6 +9,9 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
 
+    public GameObject removeBuildingPanel;
+    public bool isRemove = false;
+    
     public AudioLowPassFilter lowPassFilter;
     public AudioClip spawnSound;
     public AudioClip sound;
@@ -84,6 +87,12 @@ public class LevelController : MonoBehaviour
         InitializeMeteorElements();
         InitializeEarthquakeElements();
         InitializeWindElements();
+        
+        int remove =  PlayerPrefs.GetInt("isRemove", 0);
+        if (remove == 1)
+            isRemove = true;
+        else
+            isRemove = false;
     }
 
     private void InitializeMeteorElements()
@@ -470,6 +479,13 @@ private void CheckObjectsStability(string testName)
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)
     {
+        if (isRemove)
+        {
+            isRemove = false;
+            button.SetActive(false);
+            return;
+        }
+        
         if (grid == null || prefab == null)
         {
             Debug.LogWarning("GridBoundaryController или Prefab не назначен!");
