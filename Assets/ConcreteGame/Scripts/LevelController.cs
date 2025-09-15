@@ -9,6 +9,8 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
 
+    public AudioClip sound;
+    
     [SerializeField] private RectTransform _buildingsContent;
     
     [SerializeField] private RectTransform _menuButton;
@@ -452,7 +454,7 @@ private void CheckObjectsStability(string testName)
             // Запускаем ветер с указанными параметрами (1 секунда, сила 1)
             if (WindManager.Instance != null)
             {
-                WindManager.Instance.StartWind(1.5f, 3f);
+                WindManager.Instance.StartWind(2f, 3f);
                 Debug.Log("Wind started!");
                 StartCoroutine(WaitForWindToEnd());
             }

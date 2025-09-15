@@ -4008,6 +4008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4adf332cdd4783d4c928858f2aa39f11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sound: {fileID: 8300000, guid: f2e1aa5161d29a343b9ec570dcb16aa4, type: 3}
   duration: 3
   amplitude: 0.05
   frequency: 3
@@ -6150,6 +6151,10 @@ MonoBehaviour:
   targetLayers:
     serializedVersion: 2
     m_Bits: 64
+  sound: {fileID: 8300000, guid: c8b5a9e31e97a0046bd2ad57843b36fc, type: 3}
+  windParticles: {fileID: 6652247826745502110, guid: b0ec3b41997a94845a46a2eeaf5ca342, type: 3}
+  particleOffsetFromCamera: 1
+  particleMoveDuration: 2
 --- !u!1 &2061503848
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class WindManager : MonoBehaviour
 {
@@ -12,6 +13,14 @@ public class WindManager : MonoBehaviour
     [Header("Target Settings")]
     [SerializeField] private string targetTag = "Building";
     [SerializeField] private LayerMask targetLayers = -1;
+    
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip sound;
+    
+    [Header("Particle Settings")]
+    [SerializeField] private ParticleSystem windParticles;
+    [SerializeField] private float particleOffsetFromCamera = 2f;
+    [SerializeField] private float particleMoveDuration = 2f;
     
     private static WindManager _instance;
     public static WindManager Instance
@@ -35,6 +44,8 @@ public class WindManager : MonoBehaviour
     private bool isWindActive;
     private Coroutine windCoroutine;
     private List<Rigidbody2D> affectedObjects = new List<Rigidbody2D>();
+    private Camera mainCamera;
+    private List<ParticleSystem> spawnedParticles = new List<ParticleSystem>();
     
     private void Awake()
     {
@@ -46,6 +57,11 @@ public class WindManager : MonoBehaviour
         
         _instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+    
+    private void Start()
+    {
+        mainCamera = Camera.main;
     }
     
     public void StartWind()
@@ -65,6 +81,9 @@ public class WindManager : MonoBehaviour
             StopWind();
         }
         
+        PlayWindSound();
+        StartWindParticles();
+        
         windCoroutine = StartCoroutine(WindCoroutine(customDuration, customForce, customDirection.normalized));
     }
     
@@ -78,6 +97,70 @@ public class WindManager : MonoBehaviour
         
         isWindActive = false;
         affectedObjects.Clear();
+        StopWindParticles();
+    }
+    
+    private void PlayWindSound()
+    {
+        if (sound != null && MusicController.Instance != null)
+        {
+            MusicController.Instance.PlaySpecificSound(sound);
+        }
+    }
+    
+    private void StartWindParticles()
+    {
+        if (windParticles != null && mainCamera != null)
+        {
+            ClearPreviousParticles();
+            
+            float cameraHeight = mainCamera.orthographicSize * 2f;
+            float cameraWidth = cameraHeight * mainCamera.aspect;
+            Vector3 cameraPos = mainCamera.transform.position;
+            
+            float startX = cameraPos.x + (cameraWidth / 2f) + particleOffsetFromCamera;
+            float endX = cameraPos.x - (cameraWidth / 2f) - particleOffsetFromCamera;
+            
+            for (int i = 0; i < 3; i++)
+            {
+                float randomY = Random.Range(cameraPos.y - cameraHeight / 2f, cameraPos.y + cameraHeight / 2f);
+                
+                ParticleSystem particle = Instantiate(windParticles);
+                particle.transform.position = new Vector3(startX, randomY, cameraPos.z);
+                
+                particle.Play();
+                spawnedParticles.Add(particle);
+                
+                particle.transform.DOMoveX(endX, particleMoveDuration)
+                    .SetEase(Ease.Linear)
+                    .OnComplete(() => {
+                        if (particle != null)
+                        {
+                            particle.Stop();
+                            Destroy(particle.gameObject, 1f);
+                        }
+                    });
+            }
+        }
+    }
+    
+    private void StopWindParticles()
+    {
+        ClearPreviousParticles();
+    }
+    
+    private void ClearPreviousParticles()
+    {
+        foreach (ParticleSystem particle in spawnedParticles)
+        {
+            if (particle != null)
+            {
+                particle.transform.DOKill();
+                particle.Stop();
+                Destroy(particle.gameObject);
+            }
+        }
+        spawnedParticles.Clear();
     }
     
     private IEnumerator WindCoroutine(float windDuration, float force, Vector2 direction)
@@ -96,6 +179,7 @@ public class WindManager : MonoBehaviour
         
         isWindActive = false;
         affectedObjects.Clear();
+        StopWindParticles();
     }
     
     private void FindAffectedObjects()

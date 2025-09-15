@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class EarthquakeManager : MonoBehaviour
 {
+    public AudioClip sound;
+    
     [Header("Earthquake Settings")]
     [SerializeField] private float duration = 3f;     // Длительность землетрясения
     [SerializeField] private float amplitude = 0.5f;  // Амплитуда тряски
@@ -58,6 +60,8 @@ public class EarthquakeManager : MonoBehaviour
     {
         isEarthquakeActive = true;
         float elapsedTime = 0f;
+        
+        MusicController.Instance.PlaySpecificSound(sound);
 
         while (elapsedTime < shakeDuration)
         {
