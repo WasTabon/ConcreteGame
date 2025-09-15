@@ -28,7 +28,12 @@ public class MeteorCollisionHandler : MonoBehaviour
     {
         if (hasCollided) return;
 
-        gameObject.GetComponentInChildren<ParticleSystem>().gameObject.SetActive(false);
+        Transform fireProjectile = transform.Find("FireProjectile");
+        if (fireProjectile != null && fireProjectile.gameObject.activeSelf)
+        {
+            fireProjectile.gameObject.SetActive(false);
+        }
+
         
         if (collision.gameObject.CompareTag("Player"))
         {

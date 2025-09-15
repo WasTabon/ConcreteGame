@@ -6194,6 +6194,12 @@ MonoBehaviour:
   _star1: {fileID: 174934053}
   _star2: {fileID: 1173446789}
   _star3: {fileID: 2061503849}
+  backgroundSlideSound: {fileID: 8300000, guid: 347ddc49ef579b046b5fc5c9e7d6a1e7, type: 3}
+  winTextAppearSound: {fileID: 8300000, guid: af02014fed1c75742b186856c45312f3, type: 3}
+  buttonAppearSound: {fileID: 8300000, guid: 3eec909ce6b8fb144a9f409133289424, type: 3}
+  starBackgroundAppearSound: {fileID: 0}
+  starFillSound: {fileID: 8300000, guid: ef966980a56801e48a0b9c5b849f61da, type: 3}
+  buttonActivateSound: {fileID: 8300000, guid: 399c0fe5ccb0ff34399a2ac69eb8e77f, type: 3}
 --- !u!1 &1973159910
 GameObject:
   m_ObjectHideFlags: 0
