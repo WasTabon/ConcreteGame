@@ -475,6 +475,8 @@ private void CheckObjectsStability(string testName)
     
         // Выводим финальный результат
         Debug.Log($"🏆 FINAL RESULT: {totalStars}/3 stars earned!");
+        
+        WinController.Instance.ShowWinAnimation(totalStars);
     }
     
     public void SpawnOnGrid(GameObject prefab, GameObject button)

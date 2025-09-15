@@ -644,7 +644,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 50
 --- !u!222 &118145187
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3486,7 +3486,7 @@ GameObject:
   - component: {fileID: 963744451}
   - component: {fileID: 963744450}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: WinText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4032,6 +4032,7 @@ Transform:
   - {fileID: 400576120}
   - {fileID: 1068692312}
   - {fileID: 2031116863}
+  - {fileID: 1932294227}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1173446788
@@ -5689,6 +5690,60 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1245179847023106670, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
   m_PrefabInstance: {fileID: 1917414872}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1932294226
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1932294227}
+  - component: {fileID: 1932294228}
+  m_Layer: 0
+  m_Name: WinController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1932294227
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932294226}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1158492319}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1932294228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932294226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ebf2973e3a3e8c4e96e5713d6d7fd56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _winPanel: {fileID: 118145185}
+  _background: {fileID: 324851483}
+  _winText: {fileID: 963744449}
+  _continueButton: {fileID: 309591424}
+  _starBlack1: {fileID: 364976493}
+  _starBlack2: {fileID: 1973159911}
+  _starBlack3: {fileID: 1002727891}
+  _star1: {fileID: 174934053}
+  _star2: {fileID: 1173446789}
+  _star3: {fileID: 2061503849}
 --- !u!1 &1973159910
 GameObject:
   m_ObjectHideFlags: 0
