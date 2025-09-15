@@ -418,7 +418,7 @@ private void CheckObjectsStability(string testName)
             
             if (WindManager.Instance != null)
             {
-                WindManager.Instance.StartWind(2f, 3f);
+                WindManager.Instance.StartWind(2f, 10f);
                 Debug.Log("Wind started!");
                 StartCoroutine(WaitForWindToEnd());
             }
@@ -431,14 +431,17 @@ private void CheckObjectsStability(string testName)
     
     private IEnumerator WaitForWindToEnd()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2f);
     
         Debug.Log("Wind ended! Checking final stability...");
-    
-        CheckObjectsStability("Wind Test");
-    
-        Debug.Log($"🏆 FINAL RESULT: {totalStars}/3 stars earned!");
         
+        Invoke("SetWin", 0.5f);
+    }
+
+    public void SetWin()
+    {
+        CheckObjectsStability("Wind Test");
+        Debug.Log($"🏆 FINAL RESULT: {totalStars}/3 stars earned!");
         WinController.Instance.ShowWinAnimation(totalStars);
     }
     
