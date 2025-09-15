@@ -53,9 +53,9 @@ public class WinController : MonoBehaviour
         _winText.localScale = Vector3.zero;
         _continueButton.transform.localScale = Vector3.zero;
         
-        _starBlack1.localScale = Vector3.one;
-        _starBlack2.localScale = Vector3.one;
-        _starBlack3.localScale = Vector3.one;
+        _starBlack1.localScale = Vector3.zero;
+        _starBlack2.localScale = Vector3.zero;
+        _starBlack3.localScale = Vector3.zero;
         
         _star1.localScale = Vector3.zero;
         _star2.localScale = Vector3.zero;
