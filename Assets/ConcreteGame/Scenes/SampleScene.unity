@@ -331,9 +331,9 @@ RectTransform:
   - {fileID: 1873468189}
   m_Father: {fileID: 2054498842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.37670943, y: 0.66316926}
-  m_AnchorMax: {x: 0.37670943, y: 0.66316926}
-  m_AnchoredPosition: {x: 1, y: 0}
+  m_AnchorMin: {x: 0.37670943, y: 0.48200002}
+  m_AnchorMax: {x: 0.37670943, y: 0.48200002}
+  m_AnchoredPosition: {x: 1, y: -0.038024902}
   m_SizeDelta: {x: 374.3247, y: 141.8215}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &45630917
@@ -696,16 +696,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 73370024}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2054498842}
+  m_Father: {fileID: 1089545288}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -820, y: 0}
+  m_AnchoredPosition: {x: -1343.1206, y: -207.05054}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &73370026
@@ -4070,6 +4070,124 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556980815}
   m_CullTransparentMesh: 1
+--- !u!1 &622341620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 622341621}
+  - component: {fileID: 622341622}
+  m_Layer: 5
+  m_Name: IAP Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &622341621
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622341620}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054498842}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.37670943, y: 0.48200002}
+  m_AnchorMax: {x: 0.37670943, y: 0.48200002}
+  m_AnchoredPosition: {x: 0.5, y: 0}
+  m_SizeDelta: {x: 374.32, y: 141.82}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &622341622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622341620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b79b5624d944058bd39aad2b90fb275, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  productId: com.concretebuilder.removepurchase
+  buttonType: 0
+  automaticallyConfirmTransaction: 1
+  onProductFetched:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1736991642}
+        m_TargetAssemblyTypeName: BuyController, Assembly-CSharp
+        m_MethodName: OnProductFetched
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onProductFetchFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseFetched:
+    m_PersistentCalls:
+      m_Calls: []
+  onTransactionsRestored:
+    m_PersistentCalls:
+      m_Calls: []
+  onOrderPending:
+    m_PersistentCalls:
+      m_Calls: []
+  onOrderConfirmed:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onOrderDeferred:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseCompleteLegacy:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1736991642}
+        m_TargetAssemblyTypeName: BuyController, Assembly-CSharp
+        m_MethodName: OnPurchaseComlete
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onPurchaseFailedLegacy:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1736991642}
+        m_TargetAssemblyTypeName: BuyController, Assembly-CSharp
+        m_MethodName: OnPurchaseFailed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  button: {fileID: 1238128651}
 --- !u!1 &633492490
 GameObject:
   m_ObjectHideFlags: 0
@@ -5495,7 +5613,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 73370025}
   m_Father: {fileID: 2054498842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.72312844, y: 0.87575394}
@@ -6039,6 +6158,7 @@ Transform:
   - {fileID: 2031116863}
   - {fileID: 1932294227}
   - {fileID: 1413430}
+  - {fileID: 1736991641}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1172147410
@@ -6309,9 +6429,9 @@ RectTransform:
   - {fileID: 1900864399}
   m_Father: {fileID: 2054498842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.37670943, y: 0.66316926}
-  m_AnchorMax: {x: 0.37670943, y: 0.66316926}
-  m_AnchoredPosition: {x: 2, y: 0}
+  m_AnchorMin: {x: 0.37670943, y: 0.48200002}
+  m_AnchorMax: {x: 0.37670943, y: 0.48200002}
+  m_AnchoredPosition: {x: 2, y: -0.038024902}
   m_SizeDelta: {x: 374.3247, y: 141.8215}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1238128651
@@ -6599,9 +6719,9 @@ RectTransform:
   - {fileID: 123010650}
   m_Father: {fileID: 2054498842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.37670943, y: 0.3618691}
-  m_AnchorMax: {x: 0.37670943, y: 0.3618691}
-  m_AnchoredPosition: {x: 1, y: -2.088997}
+  m_AnchorMin: {x: 0.72312844, y: 0.2506614}
+  m_AnchorMax: {x: 0.72312844, y: 0.2506614}
+  m_AnchoredPosition: {x: 1.6199951, y: 2}
   m_SizeDelta: {x: 374.3247, y: 141.8215}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1269272908
@@ -7759,6 +7879,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1629201114}
   m_CullTransparentMesh: 1
+--- !u!1 &1736991640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1736991641}
+  - component: {fileID: 1736991642}
+  m_Layer: 0
+  m_Name: BuyController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1736991641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736991640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1158492319}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1736991642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736991640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de90fe61d621cf84394376b6a90d2751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _donateId: com.concretebuilder.removepurchase
+  loadingButton: {fileID: 45630915}
+  buySound: {fileID: 8300000, guid: 04e0e9361f635334bb945d85d1465514, type: 3}
+  buttonText: {fileID: 1900864400}
+  panel: {fileID: 0}
 --- !u!1 &1760785373
 GameObject:
   m_ObjectHideFlags: 0
@@ -8505,7 +8674,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3.99$
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9146,10 +9315,10 @@ RectTransform:
   m_Children:
   - {fileID: 1089545288}
   - {fileID: 2092823997}
-  - {fileID: 73370025}
   - {fileID: 1238128650}
   - {fileID: 45630916}
   - {fileID: 1269272907}
+  - {fileID: 622341621}
   m_Father: {fileID: 1057852378}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -9304,8 +9473,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.72312844, y: 0.40124607}
   m_AnchorMax: {x: 0.72312844, y: 0.40124607}
-  m_AnchoredPosition: {x: 1, y: 3.4900055}
-  m_SizeDelta: {x: 552.9586, y: 371.266}
+  m_AnchoredPosition: {x: 1, y: 111.03511}
+  m_SizeDelta: {x: 552.9586, y: 156.1758}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2092823998
 MonoBehaviour:
@@ -9327,7 +9496,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Allow you to choose which building to remove
+  m_text: Allows you to pick one building to remove it
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
