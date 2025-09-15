@@ -523,6 +523,11 @@ MonoBehaviour:
   _noButton: {fileID: 550547778555078389}
   gridSize: 0.5
   allowPassthrough: 1
+  movementSounds:
+  - {fileID: 8300000, guid: 10990929c948b8545854b9e5cd1d53c3, type: 3}
+  - {fileID: 8300000, guid: c74f797517954104791354c82e9df21b, type: 3}
+  - {fileID: 8300000, guid: f4c60649067c6544ab21a7ca5926abd0, type: 3}
+  matchSound: {fileID: 8300000, guid: b6d14f7102aa3154f9ef3645cc46bb74, type: 3}
 --- !u!1 &7240587953326680795
 GameObject:
   m_ObjectHideFlags: 0
