@@ -8,9 +8,9 @@ public class UIController : MonoBehaviour
     public static UIController Instance;
     
     [Header("Buildings Settings")]
-    [SerializeField] private GameObject backgroundObject;   // родительский прозрачный фон
-    [SerializeField] private RectTransform panel;           // дочерняя панель, которая растягивается
-    [SerializeField] private RectTransform content;         // контейнер с дочерними элементами
+    [SerializeField] private GameObject backgroundObject;   
+    [SerializeField] private RectTransform panel;           
+    [SerializeField] private RectTransform content;         
     [SerializeField] private float panelStretchDuration = 0.5f;
     [SerializeField] private float contentStagger = 0.1f;
     [SerializeField] private float contentAnimDuration = 0.25f;
@@ -21,10 +21,20 @@ public class UIController : MonoBehaviour
     [SerializeField] private float expandDuration = 0.5f; 
     [SerializeField] private float buttonsStagger = 0.15f; 
     [SerializeField] private float buttonAnimDuration = 0.35f; 
-    [SerializeField] private float buttonMoveOffset = 30f; 
+    [SerializeField] private float buttonMoveOffset = 30f;
+
+    [Header("Sound Effects")]
+    [SerializeField] private AudioClip panelOpenSound;
+    [SerializeField] private AudioClip panelCloseSound;
+    [SerializeField] private AudioClip contentAppearSound;
+    [SerializeField] private AudioClip contentDisappearSound;
+    [SerializeField] private AudioClip menuExpandSound;
+    [SerializeField] private AudioClip menuCollapseSound;
+    [SerializeField] private AudioClip buttonAppearSound;
+    [SerializeField] private AudioClip buttonDisappearSound;
 
     private RectTransform[] childButtons;
-    private Vector2[] originalPositions;   // фиксируем оригинальные позиции кнопок
+    private Vector2[] originalPositions;   
     private Vector2 initialBackgroundSize;   
     private Vector2 collapsedBackgroundSize; 
     private bool isExpanded = false;
@@ -42,7 +52,6 @@ public class UIController : MonoBehaviour
         childButtons = System.Array.FindAll(childButtons, x =>
             x != buttonsBackground && x.GetComponent<Button>() != null && x.gameObject != openButton.gameObject);
 
-        // сохраняем исходные позиции кнопок
         originalPositions = new Vector2[childButtons.Length];
         for (int i = 0; i < childButtons.Length; i++)
             originalPositions[i] = childButtons[i].anchoredPosition;
@@ -68,7 +77,7 @@ public class UIController : MonoBehaviour
         {
             panelInitialSize = panel.sizeDelta;
             panel.sizeDelta = new Vector2(0, panelInitialSize.y);
-            panel.gameObject.SetActive(true); // чтобы DOTween мог анимировать
+            panel.gameObject.SetActive(true);
         }
 
         if (content != null)
@@ -86,27 +95,42 @@ public class UIController : MonoBehaviour
             backgroundObject.SetActive(false);
     }
 
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip != null && MusicController.Instance != null)
+        {
+            MusicController.Instance.PlaySpecificSound(clip);
+        }
+    }
+
     public void OpenBuildingPanel()
     {
+        //PlaySound(panelOpenSound);
+
         if (backgroundObject != null)
             backgroundObject.SetActive(true);
 
         if (panel != null)
         {
-            panel.gameObject.SetActive(true); // панель должна быть активной для анимации
-            panel.sizeDelta = new Vector2(0, panelInitialSize.y); // сброс ширины перед анимацией
+            panel.gameObject.SetActive(true);
+            panel.sizeDelta = new Vector2(0, panelInitialSize.y);
 
             panel.DOSizeDelta(panelInitialSize, panelStretchDuration).SetEase(Ease.OutQuad)
-                .OnComplete(() => AnimateContent(true));
+                .OnComplete(() => {
+                    PlaySound(contentAppearSound);
+                    AnimateContent(true);
+                });
         }
     }
 
     public void CloseBuildingPanel()
     {
+        PlaySound(panelCloseSound);
+
         if (content != null)
         {
+            PlaySound(contentDisappearSound);
             AnimateContent(false, () => {
-                // Отключаем панель и фон только после завершения анимации
                 if (panel != null)
                     panel.gameObject.SetActive(false);
             
@@ -116,7 +140,6 @@ public class UIController : MonoBehaviour
         }
         else
         {
-            // Если нет контента, отключаем сразу
             if (panel != null)
                 panel.gameObject.SetActive(false);
         
@@ -163,7 +186,6 @@ public class UIController : MonoBehaviour
             }
         }
 
-        // Если нет дочерних элементов
         if (content.childCount == 0)
             onComplete?.Invoke();
     }
@@ -183,10 +205,14 @@ public class UIController : MonoBehaviour
         isExpanded = true;
         isAnimating = true;
 
+        PlaySound(menuExpandSound);
+
         buttonsBackground.DOSizeDelta(initialBackgroundSize, expandDuration)
             .SetEase(Ease.OutQuad)
             .OnComplete(() =>
             {
+                PlaySound(buttonAppearSound);
+
                 for (int i = 0; i < childButtons.Length; i++)
                 {
                     var btn = childButtons[i];
@@ -196,7 +222,6 @@ public class UIController : MonoBehaviour
                     if (cg == null) cg = btn.gameObject.AddComponent<CanvasGroup>();
                     cg.alpha = 0;
 
-                    // сброс начальных значений: всегда от originalPositions
                     btn.localScale = Vector3.one * 0.8f;
                     btn.anchoredPosition = originalPositions[i] - new Vector2(0, buttonMoveOffset);
 
@@ -220,7 +245,11 @@ public class UIController : MonoBehaviour
         isExpanded = false;
         isAnimating = true;
 
+        PlaySound(menuCollapseSound);
+
         int completed = 0; 
+
+        PlaySound(buttonDisappearSound);
 
         for (int i = 0; i < childButtons.Length; i++)
         {

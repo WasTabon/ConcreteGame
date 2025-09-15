@@ -169,7 +169,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 887f33f72faa12645b2e1e8088bffe7d, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -271,7 +271,7 @@ MonoBehaviour:
   _soundButtonIconOff: {fileID: 0}
   _audioSourceMusic: {fileID: 1413431}
   _audioSourceSound: {fileID: 1172147412}
-  _uiClickSound: {fileID: 0}
+  _uiClickSound: {fileID: 8300000, guid: 1c0bec45225d5b0428724ef8b7e0cab7, type: 3}
 --- !u!169 &1413433
 AudioLowPassFilter:
   m_ObjectHideFlags: 0
@@ -910,7 +910,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 145683507}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1413432}
+        m_TargetAssemblyTypeName: MusicController, Assembly-CSharp
+        m_MethodName: PlayClickSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &145683507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1598,7 +1610,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 309591425}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1413432}
+        m_TargetAssemblyTypeName: MusicController, Assembly-CSharp
+        m_MethodName: PlayClickSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &309591425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1720,6 +1744,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1413432}
+        m_TargetAssemblyTypeName: MusicController, Assembly-CSharp
+        m_MethodName: PlayClickSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1818612517}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
         m_MethodName: OpenBuildingPanel
@@ -2442,6 +2478,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1413432}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlayClickSound
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MusicController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2543,6 +2607,34 @@ PrefabInstance:
     - target: {fileID: 6130744652270235948, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1413432}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlayClickSound
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MusicController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296339902829313168, guid: 5aaa21fafc0d13d4ca4e15c811b5dda7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5447,6 +5539,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1413432}
+        m_TargetAssemblyTypeName: MusicController, Assembly-CSharp
+        m_MethodName: PlayClickSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1818612517}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
         m_MethodName: CloseBuildingPanel
@@ -5553,6 +5657,14 @@ MonoBehaviour:
   buttonsStagger: 0.15
   buttonAnimDuration: 0.35
   buttonMoveOffset: 30
+  panelOpenSound: {fileID: 8300000, guid: 6b7f1ec3ca957e947bcf20a3d0057e16, type: 3}
+  panelCloseSound: {fileID: 0}
+  contentAppearSound: {fileID: 8300000, guid: f58ae12725705b0459360130199774b5, type: 3}
+  contentDisappearSound: {fileID: 0}
+  menuExpandSound: {fileID: 8300000, guid: 2e951d13956658e418c4544c4b0ea1ae, type: 3}
+  menuCollapseSound: {fileID: 8300000, guid: 2e951d13956658e418c4544c4b0ea1ae, type: 3}
+  buttonAppearSound: {fileID: 8300000, guid: 6b7f1ec3ca957e947bcf20a3d0057e16, type: 3}
+  buttonDisappearSound: {fileID: 0}
 --- !u!1 &1846957483
 GameObject:
   m_ObjectHideFlags: 0
@@ -5990,6 +6102,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1413432}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlayClickSound
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MusicController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995122305078581202, guid: 0f63ebb231224d54ba8c507ea7e42a92, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6342,7 +6482,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2123855027}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1413432}
+        m_TargetAssemblyTypeName: MusicController, Assembly-CSharp
+        m_MethodName: PlayClickSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2123855027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6472,6 +6624,34 @@ PrefabInstance:
     - target: {fileID: 1834373431650121871, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1413432}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlayClickSound
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MusicController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558559825022170419, guid: 41378ebf654fd764d933542fa06f9e33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
