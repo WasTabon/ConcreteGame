@@ -11,7 +11,7 @@ public class MusicController : MonoBehaviour
         [SerializeField] private Sprite _soundButtonIconOn;
         [SerializeField] private Sprite _soundButtonIconOff;
 
-        [SerializeField] private AudioSource _audioSourceMusic;
+        [SerializeField] public AudioSource _audioSourceMusic;
         [SerializeField] private AudioSource _audioSourceSound;
 
         [SerializeField] private AudioClip _uiClickSound;

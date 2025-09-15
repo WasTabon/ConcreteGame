@@ -9,7 +9,9 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController Instance;
 
+    public AudioLowPassFilter lowPassFilter;
     public AudioClip sound;
+    public AudioClip music;
     
     [SerializeField] private RectTransform _buildingsContent;
     
@@ -163,6 +165,8 @@ public class LevelController : MonoBehaviour
                     gm.GetComponent<Rigidbody2D>().mass = 5f;
                     SaveInitialTransforms(gridMovements);
                 }
+                
+                SwitchMusicSmooth(music);
                 
                 StartMeteorAnimation();
             }));
@@ -438,10 +442,28 @@ private void CheckObjectsStability(string testName)
         Invoke("SetWin", 0.5f);
     }
 
+    public void SwitchMusicSmooth(AudioClip music, float fadeDuration = 1f)
+    {
+        if (MusicController.Instance._audioSourceMusic.clip == music)
+            return;
+
+        float originalVolume = MusicController.Instance._audioSourceMusic.volume;
+    
+        MusicController.Instance._audioSourceMusic.DOFade(0f, fadeDuration / 2f)
+            .OnComplete(() =>
+            {
+                MusicController.Instance._audioSourceMusic.clip = music;
+                MusicController.Instance._audioSourceMusic.Play();
+            
+                MusicController.Instance._audioSourceMusic.DOFade(originalVolume, fadeDuration / 2f);
+            });
+    }
+    
     public void SetWin()
     {
         CheckObjectsStability("Wind Test");
         Debug.Log($"🏆 FINAL RESULT: {totalStars}/3 stars earned!");
+        lowPassFilter.cutoffFrequency = 500f;
         WinController.Instance.ShowWinAnimation(totalStars);
     }
     
