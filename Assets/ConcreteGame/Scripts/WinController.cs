@@ -81,6 +81,10 @@ public class WinController : MonoBehaviour
         
         winSequence.Append(_continueButton.transform.DOScale(_originalButtonScale, 0.4f).SetEase(Ease.OutQuad));
         
+        winSequence.Append(_starBlack1.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutQuad));
+        winSequence.Join(_starBlack2.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutQuad).SetDelay(0.1f));
+        winSequence.Join(_starBlack3.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutQuad).SetDelay(0.2f));
+        
         if (starCount >= 1)
         {
             winSequence.Append(_star1.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
