@@ -23,6 +23,11 @@ public class GridMovement : MonoBehaviour
     [SerializeField] private AudioClip[] movementSounds;
     [SerializeField] private AudioClip matchSound;
 
+    [Header("Звуки столкновения")]
+    [SerializeField] private AudioClip collisionSound;
+    [SerializeField] private float minCollisionVelocity = 0.1f;
+    [SerializeField] private float collisionSoundInterval = 0.1f;
+
     private Camera mainCamera;
     private bool isDragging = false;
     private bool hasCollision = false;
@@ -31,15 +36,19 @@ public class GridMovement : MonoBehaviour
     private Vector3 lastPosition;
     private float soundTimer = 0f;
     private const float SOUND_INTERVAL = 0.1f;
+    private float lastCollisionSoundTime = 0f;
 
     private bool blockLeft, blockRight, blockUp, blockDown;
 
     private Bounds debugBounds;
     private bool drawDebug;
 
+    private Rigidbody2D rb2d;
+
     void Start()
     {
         mainCamera = Camera.main;
+        rb2d = GetComponent<Rigidbody2D>();
 
         _yesButton.localScale = Vector3.zero;
         _noButton.localScale = Vector3.zero;
@@ -67,6 +76,31 @@ public class GridMovement : MonoBehaviour
         }
         
         CheckNeighbors();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (rb2d != null && rb2d.bodyType == RigidbodyType2D.Dynamic)
+        {
+            float relativeVelocity = collision.relativeVelocity.magnitude;
+            
+            if (relativeVelocity > minCollisionVelocity)
+            {
+                if (Time.time - lastCollisionSoundTime >= collisionSoundInterval)
+                {
+                    PlayCollisionSound();
+                    lastCollisionSoundTime = Time.time;
+                }
+            }
+        }
+    }
+
+    private void PlayCollisionSound()
+    {
+        if (collisionSound != null && MusicController.Instance != null)
+        {
+            MusicController.Instance.PlaySpecificSound(collisionSound);
+        }
     }
 
     private void HandleMovementSounds()

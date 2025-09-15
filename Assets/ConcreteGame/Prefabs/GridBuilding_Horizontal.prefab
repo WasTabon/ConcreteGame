@@ -677,6 +677,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c74f797517954104791354c82e9df21b, type: 3}
   - {fileID: 8300000, guid: f4c60649067c6544ab21a7ca5926abd0, type: 3}
   matchSound: {fileID: 8300000, guid: b6d14f7102aa3154f9ef3645cc46bb74, type: 3}
+  collisionSound: {fileID: 8300000, guid: 631aedb515dd01544b0fff7867f713ee, type: 3}
+  minCollisionVelocity: 0.03
+  collisionSoundInterval: 0.7
 --- !u!1 &7513958059162387255
 GameObject:
   m_ObjectHideFlags: 0
