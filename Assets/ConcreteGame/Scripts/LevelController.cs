@@ -451,7 +451,7 @@ private void CheckObjectsStability(string testName)
             
             if (WindManager.Instance != null)
             {
-                WindManager.Instance.StartWind(2f, 10f);
+                WindManager.Instance.StartWind(2f, 5f);
                 Debug.Log("Wind started!");
                 StartCoroutine(WaitForWindToEnd());
             }
@@ -468,7 +468,7 @@ private void CheckObjectsStability(string testName)
     
         Debug.Log("Wind ended! Checking final stability...");
         
-        Invoke("SetWin", 0.5f);
+        Invoke("SetWin", 1.5f);
     }
 
     public void SwitchMusicSmooth(AudioClip music, float fadeDuration = 1f)
@@ -501,6 +501,7 @@ private void CheckObjectsStability(string testName)
         if (isRemove)
         {
             isRemove = false;
+            PlayerPrefs.SetInt("isRemove", 0);
             button.SetActive(false);
             removeBuildingPanel.SetActive(true);
             _neededBuldings--;
