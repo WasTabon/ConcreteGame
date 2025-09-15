@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class GridMovement : MonoBehaviour
 {
+    public AudioClip buildSound;
+    public AudioClip denySound;
+    
     [SerializeField] private float _animSpeed = 0.15f;
     [SerializeField] private bool _isBuilded;
 
@@ -70,20 +73,13 @@ public class GridMovement : MonoBehaviour
     {
         bool isMoving = Vector3.Distance(transform.position, lastPosition) > 0.01f;
         
-        if (isMoving)
+        if (isMoving && !hasCollision)
         {
             soundTimer += Time.deltaTime;
             
             if (soundTimer >= SOUND_INTERVAL)
             {
-                if (hasCollision)
-                {
-                    PlayMatchSound();
-                }
-                else
-                {
-                    PlayRandomMovementSound();
-                }
+                PlayRandomMovementSound();
                 soundTimer = 0f;
             }
         }
@@ -279,6 +275,7 @@ public class GridMovement : MonoBehaviour
         {
             hasCollision = true;
             ShowBuildButtons();
+            PlayMatchSound();
         }
         else if (!foundNeighbor && hasCollision)
         {
@@ -390,11 +387,13 @@ public class GridMovement : MonoBehaviour
     {
         _isBuilded = true;
         HideBuildButtons();
+        MusicController.Instance.PlaySpecificSound(buildSound);
         LevelController.Instance.AllowBuild();
     }
 
     public void DenyBuild()
     {
+        MusicController.Instance.PlaySpecificSound(denySound);
         LevelController.Instance.DenyBuild();
     }
 

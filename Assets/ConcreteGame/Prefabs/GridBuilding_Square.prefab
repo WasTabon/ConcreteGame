@@ -785,6 +785,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a025258560d094a8392d599b647d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buildSound: {fileID: 8300000, guid: 70914379bc6fc7a4f8b151675ef7d5f8, type: 3}
+  denySound: {fileID: 8300000, guid: 6d55a2d5ddc6e2a499186af36227cae4, type: 3}
   _animSpeed: 0.15
   _isBuilded: 0
   _yesButton: {fileID: 5900216414934835177}

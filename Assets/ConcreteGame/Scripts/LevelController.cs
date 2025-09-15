@@ -10,6 +10,7 @@ public class LevelController : MonoBehaviour
     public static LevelController Instance;
 
     public AudioLowPassFilter lowPassFilter;
+    public AudioClip spawnSound;
     public AudioClip sound;
     public AudioClip music;
     
@@ -490,6 +491,8 @@ private void CheckObjectsStability(string testName)
             Vector3 spawnPos = new Vector3(spawnPosition.x, spawnPosition.y, 0);
             GameObject obj = Instantiate(prefab, spawnPos, prefab.transform.rotation);
             _currentObject = obj;
+            
+            MusicController.Instance.PlaySpecificSound(spawnSound);
             
             UIController.Instance.CloseBuildingPanel();
         }

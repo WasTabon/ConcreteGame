@@ -1128,6 +1128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lowPassFilter: {fileID: 1413433}
+  spawnSound: {fileID: 8300000, guid: 10990929c948b8545854b9e5cd1d53c3, type: 3}
   sound: {fileID: 8300000, guid: 448fba7b5614c38479882b9653458765, type: 3}
   music: {fileID: 8300000, guid: 84cfb84b4d3d9b5418e0360b1769cf4d, type: 3}
   _buildingsContent: {fileID: 733825954}
@@ -4260,7 +4261,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
