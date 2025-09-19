@@ -11,7 +11,19 @@ PrefabInstance:
     - target: {fileID: 42971168162135070, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 80a6119802c41fe459342b30515edbc9, type: 3}
+      objectReference: {fileID: 21300000, guid: 54abf0e6f6641794fb97d2b61242976f, type: 3}
+    - target: {fileID: 408094162840508497, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 79.948
+      objectReference: {fileID: 0}
+    - target: {fileID: 408094162840508497, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.0000009536743
+      objectReference: {fileID: 0}
+    - target: {fileID: 408094162840508497, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 798891403540722071, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_Name
       value: DiagonalBuildingCard
@@ -95,6 +107,14 @@ PrefabInstance:
     - target: {fileID: 2140266099103699220, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4176100080974475646, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2fd4bd18022a8c04fadc5ed8e1ea2527, type: 3}
+    - target: {fileID: 4176100080974475646, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 42971168162135070, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 7497f6a969a578f47960489a9b97f4c9, type: 3}
+      objectReference: {fileID: 21300000, guid: bd830e8ffe982784e9d5e45ec8bad8d1, type: 3}
     - target: {fileID: 798891403540722071, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_Name
       value: SquareBuildingCard

@@ -11,7 +11,15 @@ PrefabInstance:
     - target: {fileID: 42971168162135070, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: fd3b78b6cc8a3244dbbffc5f332b8a1f, type: 3}
+      objectReference: {fileID: 21300000, guid: 1f5135a54c3e94c49a9440e1bd0cbb6c, type: 3}
+    - target: {fileID: 408094162840508497, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 81.2394
+      objectReference: {fileID: 0}
+    - target: {fileID: 408094162840508497, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 798891403540722071, guid: 842fc0951dd6f974db8b0186b292a4b9, type: 3}
       propertyPath: m_Name
       value: VerticalBuildingCard
