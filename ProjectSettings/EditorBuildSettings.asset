@@ -11,4 +11,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ConcreteGame/Scenes/Level 1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/ConcreteGame/Scenes/Level 2.unity
+    guid: 8788fc6778d626d46ba9b094a5b871b1
+  - enabled: 1
+    path: Assets/ConcreteGame/Scenes/Level 3.unity
+    guid: 03dfdc4f90729704fbcb75a2431a416f
+  - enabled: 1
+    path: Assets/ConcreteGame/Scenes/Level 4.unity
+    guid: e10a8bd7f7ff07b42beb329f455b4588
+  - enabled: 1
+    path: Assets/ConcreteGame/Scenes/Level 5.unity
+    guid: 3d7fdd1934d4f8d438f584b4be1da763
   m_configObjects: {}
