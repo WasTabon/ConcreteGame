@@ -105,12 +105,14 @@ public class LevelButtonPrefabReplacer : EditorWindow
             }
         }
 
+        replacementData.Reverse();
+        
         foreach (var data in replacementData)
         {
             GameObject newButton = (GameObject)PrefabUtility.InstantiatePrefab(levelButtonPrefab);
             newButton.name = $"LevelButton_{data.levelNumber}";
             newButton.transform.SetParent(data.parent, false);
-            newButton.transform.SetSiblingIndex(data.siblingIndex);
+            newButton.transform.SetAsLastSibling();
             
             LevelButtonData newButtonData = newButton.GetComponent<LevelButtonData>();
             if (newButtonData != null)
